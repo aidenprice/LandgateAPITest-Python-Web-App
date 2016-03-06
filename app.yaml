@@ -1,0 +1,26 @@
+application: landgateapitest
+version: 3
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+
+- url: /servicetest
+  script: landgateapitest.app
+
+- url: /stats
+  script: landgateapitest.app
+
+- url: /database
+  script: landgateapitest.app
+
+- url: /.*
+  script: landgateapitest.app
+
+libraries:
+- name: webapp2
+  version: 'latest'
