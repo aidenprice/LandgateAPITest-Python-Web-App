@@ -10,7 +10,6 @@ import json
 from datetime import datetime
 from calendar import timegm
 
-# Master comment!!!!
 # Constants
 
 DEFAULT_CAMPAIGN_NAME = 'test_campaign'
@@ -55,7 +54,6 @@ class ResultObject(polymodel.PolyModel):
     datetime = ndb.DateTimeProperty()
     success = ndb.BooleanProperty()
     comment = ndb.StringProperty()
-    uploaded = ndb.BooleanProperty()
 
 
 class TestMaster(ResultObject):
@@ -148,9 +146,8 @@ class MainPage(webapp2.RequestHandler):
         try:
             campaignKey = getCampaignKey(dictResults.get('campaignName'))
 
-            print dictResults
 
-            for TM in dictResults.get('TestMasters'):
+            for TM in dictResults.get('TestMasters', []):
                 testMaster = TestMaster(parent=campaignKey)
                 testMaster.testID = TM.get('testID')
                 testMaster.parentID = TM.get('parentID')
@@ -165,7 +162,7 @@ class MainPage(webapp2.RequestHandler):
                 masterKey = testMaster.put()
 
                 listTestEndpoints = []
-                for TE in TM.get('TestEndpoints'):
+                for TE in TM.get('endpointResults', []):
                     print TE
                     testEndpoint = None
                     keys = TE.keys()
@@ -178,8 +175,13 @@ class MainPage(webapp2.RequestHandler):
                     elif 'jsonResponse' in keys:
                         testEndpoint = JsonEndpoint(parent=masterKey)
                         testEndpoint.jsonResponse = TE.get('jsonResponse')
+                    elif 'responseData' in keys:
+                        # There was no response to the original request (likely no connectivity)
+                        # Here we set to a null json response.
+                        testEndpoint = JsonEndpoint(parent=masterKey)
+                        testEndpoint.jsonResponse = None
 
-                    if any(['imageResponse' in keys, 'xmlResponse' in keys, 'jsonResponse' in keys]):
+                    if any(['imageResponse' in keys, 'xmlResponse' in keys, 'jsonResponse' in keys, 'responseData' in keys]):
                         testEndpoint.testID = TE.get('testID')
                         testEndpoint.parentID = TE.get('parentID')
                         testEndpoint.startDatetime = datetime.utcfromtimestamp(float(TE.get('startDatetime')))
@@ -200,7 +202,7 @@ class MainPage(webapp2.RequestHandler):
                 print listTestEndpoints
 
                 listNetworkResults = []
-                for NR in TM.get('NetworkResults'):
+                for NR in TM.get('networkResults', []):
                     networkResult = NetworkResult(parent=masterKey)
                     networkResult.testID = NR.get('testID')
                     networkResult.parentID = NR.get('parentID')
@@ -216,22 +218,22 @@ class MainPage(webapp2.RequestHandler):
                 print listNetworkResults
 
                 listLocationResults = []
-                for LR in TM.get('LocationResults'):
+                for LR in TM.get('locationResults', []):
                     locationResult = LocationResult(parent=masterKey)
                     locationResult.testID = LR.get('testID')
                     locationResult.parentID = LR.get('parentID')
                     locationResult.datetime = datetime.utcfromtimestamp(float(LR.get('datetime')))
                     locationResult.success = bool(LR.get('success'))
                     locationResult.comment = LR.get('comment')
-                    locationResult.location = ndb.GeoPt(str(LR.get('lat')) + ', ' +
-                                                        str(LR.get('lon')))
+                    locationResult.location = ndb.GeoPt(str(LR.get('latitude')) + ', ' +
+                                                        str(LR.get('longitude')))
 
                     listLocationResults.append(locationResult)
 
                 print listLocationResults
 
                 listPingResults = []
-                for PR in TM.get('PingResults'):
+                for PR in TM.get('pingResults'):
                     pingResult = PingResult(parent=masterKey)
                     pingResult.testID = PR.get('testID')
                     pingResult.parentID = PR.get('parentID')
