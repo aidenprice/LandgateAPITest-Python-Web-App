@@ -233,7 +233,7 @@ class MainPage(webapp2.RequestHandler):
                 print listLocationResults
 
                 listPingResults = []
-                for PR in TM.get('pingResults'):
+                for PR in TM.get('pingResults', []):
                     pingResult = PingResult(parent=masterKey)
                     pingResult.testID = PR.get('testID')
                     pingResult.parentID = PR.get('parentID')
