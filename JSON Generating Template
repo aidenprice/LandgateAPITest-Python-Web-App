@@ -1,0 +1,71 @@
+{
+  campaignName: 'test_campaign',
+  TestMasters: [
+    {
+      testID: '{{objectId()}}',
+      parentID: '{{objectId()}}',
+      startDatetime: '{{floating(1448888400, 1454245200, 6)}}',
+      finishDatetime: '{{floating(1448888400, 1454245200, 6)}}',
+      success: '{{bool()}}',
+      comment: '{{lorem(1, "paragraphs")}}',
+      deviceType: 'iPhone9,2',
+      deviceID: '{{guid()}}',
+      iOSVersion: '9.1.1',
+      endpointResults: [
+        {
+          'repeat:4': {
+            testID: '{{objectId()}}',
+            parentID: '{{objectId()}}',
+            startDatetime: '{{floating(1448888400, 1454245200, 6)}}',
+            finishDatetime: '{{floating(1448888400, 1454245200, 6)}}',
+            success: '{{bool()}}',
+            comment: '{{lorem(1, "paragraphs")}}',
+            testedURL: 'http://placehold.it/32x32',
+            responseCode: '{{integer(200, 600)}}',
+            errorResponse: '{{lorem(1, "paragraphs")}}',
+            xmlResponse: '<startTag>data</startTag>'
+          }
+        }
+      ],
+      networkResults: [
+        {
+          'repeat:6': {
+            testID: '{{objectId()}}',
+            parentID: '{{objectId()}}',
+            datetime: '{{floating(1448888400, 1454245200, 6)}}',
+            success: '{{bool()}}',
+            comment: '{{lorem(1, "paragraphs")}}',
+            carrierName: '{{lorem(1, "words")}}',
+            cellID: '{{guid()}}'
+          }
+        }
+      ],
+      locationResults: [
+        {
+          'repeat:6': {
+            testID: '{{objectId()}}',
+            parentID: '{{objectId()}}',
+            datetime: '{{floating(1448888400, 1454245200, 6)}}',
+            success: '{{bool()}}',
+            comment: '{{lorem(1, "paragraphs")}}',
+            latitude: '{{floating(-90.000001, 90)}}',
+            longitude: '{{floating(-180.000001, 180)}}'
+          }
+        }
+      ],
+      pingResults: [
+        {
+          'repeat:6': {
+            testID: '{{objectId()}}',
+            parentID: '{{objectId()}}',
+            datetime: '{{floating(1448888400, 1454245200, 6)}}',
+            success: '{{bool()}}',
+            comment: '{{lorem(1, "paragraphs")}}',
+            pingedURL: 'http:\\google.com',
+            pingTime: '{{integer(300, 2000)}}'
+          }
+        }
+      ]
+    }
+  ]
+}

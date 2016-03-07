@@ -12,7 +12,7 @@ from calendar import timegm
 
 # Constants
 
-DEFAULT_CAMPAIGN_NAME = 'test_campaign'
+DEFAULT_CAMPAIGN_NAME = 'production_campaign'
 
 def getCampaignKey(database_name=DEFAULT_CAMPAIGN_NAME):
     key = ndb.Key(TestCampaign, database_name)
