@@ -89,21 +89,24 @@ class TestEndpoint(ResultObject):
 
 # sub-subclasses for json, xml, images
 class ImageEndpoint(TestEndpoint):
-    """An API endpoint test designed to return an image
-    for example a WMTS call returning a map tile."""
-    imageResponse = ndb.BlobProperty()
+    """An API endpoint test designed to return an image for example a WMTS call
+    returning a map tile.
+    Importantly, in order to transmit images in JSON we must first convert them
+    to 64 bit text. We keep them in this format for ease of comparison to
+    a reference copy of the image, and we do not plan to display images."""
+    imageResponse = ndb.TextProperty()
 
 
 class XmlEndpoint(TestEndpoint):
     """A concrete class designed to hold a GML response from
     a test on an OGC API endpoint."""
-    xmlResponse = ndb.StringProperty()
+    xmlResponse = ndb.TextProperty()
 
 
 class JsonEndpoint(TestEndpoint):
     """A concrete class to hold the JSON response from a
-    test on an GeoJSON API endpoint."""
-    jsonResponse = ndb.StringProperty()
+    test on a GeoJSON or EsriJson API endpoint."""
+    jsonResponse = ndb.JsonProperty()
 
 
 class NetworkResult(ResultObject):
@@ -141,7 +144,11 @@ class MainPage(webapp2.RequestHandler):
     model objects for storage.
     Dumps the entire datastore as JSON on a successful GET request."""
     def post(self):
-        dictResults = json.loads(self.request.body)
+        dictResults = {}
+        if type(self.request.body) is str:
+            dictResults = json.loads(self.request.body.decode('string-escape').strip('"'))
+        else
+            dictResults = json.load(self.request.body)
 
         try:
             campaignKey = getCampaignKey(dictResults.get('campaignName'))
