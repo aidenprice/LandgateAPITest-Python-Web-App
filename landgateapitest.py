@@ -105,8 +105,11 @@ class XmlEndpoint(TestEndpoint):
 
 class JsonEndpoint(TestEndpoint):
     """A concrete class to hold the JSON response from a
-    test on a GeoJSON or EsriJson API endpoint."""
-    jsonResponse = ndb.JsonProperty()
+    test on a GeoJSON or EsriJson API endpoint.
+    There is an ndb.JsonProperty object sounds perfect for this use case.
+    Unfortunately, we can not be assured of receiving well formed JSON
+    and must store incomplete JSON returns as well as complete ones."""
+    jsonResponse = ndb.TextProperty()
 
 
 class NetworkResult(ResultObject):
