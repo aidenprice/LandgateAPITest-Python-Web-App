@@ -147,7 +147,7 @@ class MainPage(webapp2.RequestHandler):
         dictResults = {}
         if type(self.request.body) is str:
             dictResults = json.loads(self.request.body.decode('string-escape').strip('"'))
-        else
+        else:
             dictResults = json.load(self.request.body)
 
         try:
