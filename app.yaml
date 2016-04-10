@@ -1,5 +1,5 @@
 application: landgateapitest
-version: 8
+version: 10
 runtime: python27
 api_version: 1
 threadsafe: yes
@@ -15,6 +15,12 @@ handlers:
 - url: /stats
   script: landgateapitest.app
 
+- url: /graphs
+  script: landgateapitest.app
+
+- url: /analyse
+  script: landgateapitest.app
+
 - url: /database
   script: landgateapitest.app
 
@@ -23,4 +29,6 @@ handlers:
 
 libraries:
 - name: webapp2
+  version: 'latest'
+- name: matplotlib
   version: 'latest'
