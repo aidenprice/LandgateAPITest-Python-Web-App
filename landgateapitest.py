@@ -1,6 +1,7 @@
 # Libraries available on Google cloud service.
 import webapp2
 import matplotlib
+import os
 
 # Google's appengine python libraries.
 from google.appengine.ext import ndb
@@ -116,33 +117,37 @@ class TestEndpoint(ResultObject):
     httpMethod = ndb.StringProperty()
     testedURL = ndb.StringProperty()
     responseCode = ndb.IntegerProperty()
+    responseData = ndb.TextProperty()
     errorResponse = ndb.StringProperty()
     analysed = ndb.IntegerProperty()
 
-
+"""Previously we needed separate subclasses of each TestEndpoint response
+type as they were different properties (JsonProperty(), ImageProperty() and StringProperty()).
+It was recently discovered that the best method is make them all
+TextProperty()'s so concrete subclasses aren't necessary anymore."""
 # sub-subclasses for json, xml, images
-class ImageEndpoint(TestEndpoint):
-    """An API endpoint test designed to return an image for example a WMTS call
-    returning a map tile.
-    Importantly, in order to transmit images in JSON we must first convert them
-    to 64 bit text. We keep them in this format for ease of comparison to
-    a reference copy of the image, and we do not plan to display images."""
-    imageResponse = ndb.TextProperty()
-
-
-class XmlEndpoint(TestEndpoint):
-    """A concrete class designed to hold a GML response from
-    a test on an OGC API endpoint."""
-    xmlResponse = ndb.TextProperty()
-
-
-class JsonEndpoint(TestEndpoint):
-    """A concrete class to hold the JSON response from a
-    test on a GeoJSON or EsriJson API endpoint.
-    There is an ndb.JsonProperty object sounds perfect for this use case.
-    Unfortunately, we can not be assured of receiving well formed JSON
-    and must store incomplete JSON returns as well as complete ones."""
-    jsonResponse = ndb.TextProperty()
+# class ImageEndpoint(TestEndpoint):
+#     """An API endpoint test designed to return an image for example a WMTS call
+#     returning a map tile.
+#     Importantly, in order to transmit images in JSON we must first convert them
+#     to 64 bit text. We keep them in this format for ease of comparison to
+#     a reference copy of the image, and we do not plan to display images."""
+#     imageResponse = ndb.TextProperty()
+#
+#
+# class XmlEndpoint(TestEndpoint):
+#     """A concrete class designed to hold a GML response from
+#     a test on an OGC API endpoint."""
+#     xmlResponse = ndb.TextProperty()
+#
+#
+# class JsonEndpoint(TestEndpoint):
+#     """A concrete class to hold the JSON response from a
+#     test on a GeoJSON or EsriJson API endpoint.
+#     There is an ndb.JsonProperty object sounds perfect for this use case.
+#     Unfortunately, we can not be assured of receiving well formed JSON
+#     and must store incomplete JSON returns as well as complete ones."""
+#     jsonResponse = ndb.TextProperty()
 
 
 class NetworkResult(ResultObject):
@@ -198,6 +203,17 @@ class PingResult(ResultObject):
     pingTime = ndb.IntegerProperty()
 
 
+class ReferenceObject(ndb.Model):
+    """An object with a 'True' version of the response for a single
+    endpoint request."""
+    server = ndb.StringProperty()
+    dataset = ndb.StringProperty()
+    name = ndb.StringProperty()
+    httpMethod  = ndb.StringProperty()
+    returnType = ndb.StringProperty()
+    reference = ndb.TextProperty()
+
+
 class Vector(ndb.Model):
     """An analysis data structure, the output of the Analyse() function.
     For each EndpointResult, Analyse() considers the LocationResults,
@@ -211,20 +227,20 @@ class Vector(ndb.Model):
     subtracting the prior networkClass from the later."""
     test = ndb.StructuredProperty(TestEndpoint)
 
-    testName = ndb.StringProperty()
-    testStartDateTime = ndb.DateTimeProperty()
-    testFinishDateTime = ndb.DateTimeProperty()
-    testResponseTime = ndb.FloatProperty()
-    testDeviceType = ndb.StringProperty()
-    testDeviceID = ndb.StringProperty()
-    testIOSVersion = ndb.StringProperty()
-    testServer = ndb.StringProperty()
-    testDataset = ndb.StringProperty()
-    testHttpMethod = ndb.StringProperty()
-    testReturnType = ndb.StringProperty()
-    testResponseCode = ndb.IntegerProperty()
-    testOnDeviceSuccess = ndb.BooleanProperty()
-    testReferenceCheckSuccess = ndb.BooleanProperty()
+    name = ndb.StringProperty()
+    startDateTime = ndb.DateTimeProperty()
+    finishDateTime = ndb.DateTimeProperty()
+    responseTime = ndb.FloatProperty()
+    deviceType = ndb.StringProperty()
+    deviceID = ndb.StringProperty()
+    iOSVersion = ndb.StringProperty()
+    server = ndb.StringProperty()
+    dataset = ndb.StringProperty()
+    httpMethod = ndb.StringProperty()
+    returnType = ndb.StringProperty()
+    responseCode = ndb.IntegerProperty()
+    onDeviceSuccess = ndb.BooleanProperty()
+    referenceCheckSuccess = ndb.BooleanProperty()
 
     preTestLocation = ndb.StructuredProperty(LocationResult)
     postTestLocation = ndb.StructuredProperty(LocationResult)
@@ -313,46 +329,75 @@ class Database(webapp2.RequestHandler):
 
                 listTestEndpoints = []
                 for TE in TM.get('endpointResults', []):
-                    testEndpoint = None
-                    keys = TE.keys()
-                    if 'imageResponse' in keys:
-                        testEndpoint = ImageEndpoint(parent=masterKey)
-                        testEndpoint.imageResponse = str(TE.get('imageResponse'))
-                    elif 'xmlResponse' in keys:
-                        testEndpoint = XmlEndpoint(parent=masterKey)
-                        testEndpoint.xmlResponse = TE.get('xmlResponse')
-                    elif 'jsonResponse' in keys:
-                        testEndpoint = JsonEndpoint(parent=masterKey)
-                        testEndpoint.jsonResponse = TE.get('jsonResponse')
-                    elif 'responseData' in keys:
-                        # There was no response to the original request (likely no connectivity)
-                        # Here we set to a null json response.
-                        testEndpoint = JsonEndpoint(parent=masterKey)
-                        testEndpoint.jsonResponse = None
+                    testEndpoint = TestEndpoint(parent=masterKey)
 
-                    if any(['imageResponse' in keys, 'xmlResponse' in keys, 'jsonResponse' in keys, 'responseData' in keys]):
-                        testEndpoint.testID = TE.get('testID')
-                        testEndpoint.parentID = TE.get('parentID')
-                        testEndpoint.startDatetime = datetime.utcfromtimestamp(float(TE.get('startDatetime')))
-                        testEndpoint.finishDatetime = datetime.utcfromtimestamp(float(TE.get('finishDatetime')))
-                        testEndpoint.success = bool(TE.get('success'))
-                        testEndpoint.comment = TE.get('comment')
-                        testEndpoint.server = TE.get('server')
-                        testEndpoint.dataset = TE.get('dataset')
-                        testEndpoint.returnType = TE.get('returnType')
-                        testEndpoint.testName = TE.get('testName')
-                        testEndpoint.httpMethod = TE.get('httpMethod')
-                        testEndpoint.testedURL = TE.get('testedURL')
-                        testEndpoint.responseCode = int(TE.get('responseCode'))
-                        testEndpoint.errorResponse = TE.get('errorResponse')
-                        testEndpoint.analysed = AnalysisEnum.UNANALYSED
+                    testEndpoint.testID = TE.get('testID')
+                    testEndpoint.parentID = TE.get('parentID')
+                    testEndpoint.startDatetime = datetime.utcfromtimestamp(float(TE.get('startDatetime')))
+                    testEndpoint.finishDatetime = datetime.utcfromtimestamp(float(TE.get('finishDatetime')))
+                    testEndpoint.success = bool(TE.get('success'))
+                    testEndpoint.comment = TE.get('comment')
+                    testEndpoint.server = TE.get('server')
+                    testEndpoint.dataset = TE.get('dataset')
+                    testEndpoint.returnType = TE.get('returnType')
+                    testEndpoint.testName = TE.get('testName')
+                    testEndpoint.httpMethod = TE.get('httpMethod')
+                    testEndpoint.testedURL = TE.get('testedURL')
+                    testEndpoint.responseCode = int(TE.get('responseCode'))
+                    testEndpoint.responseData = str(TE.get('responseData'))
+                    testEndpoint.errorResponse = TE.get('errorResponse')
+                    testEndpoint.analysed = AnalysisEnum.UNANALYSED
 
-                        stats.countTestEndpoints += 1
-                        stats.totalTestEndpointTime += (TE.get('finishDatetime') - TE.get('startDatetime'))
-                        if testEndpoint.success:
-                            stats.countTestEndpointsSuccessful += 1
+                    stats.countTestEndpoints += 1
+                    stats.totalTestEndpointTime += (TE.get('finishDatetime') - TE.get('startDatetime'))
+                    if testEndpoint.success:
+                        stats.countTestEndpointsSuccessful += 1
 
-                        listTestEndpoints.append(testEndpoint)
+                    listTestEndpoints.append(testEndpoint)
+
+                    """No longer need to make concrete subclasses of
+                    TestEndpoint as all three types store their responseData
+                    in TextProperty()'s nowadays.'"""
+                    # testEndpoint = None
+                    # keys = TE.keys()
+                    # if 'imageResponse' in keys:
+                    #     testEndpoint = ImageEndpoint(parent=masterKey)
+                    #     testEndpoint.imageResponse = str(TE.get('imageResponse'))
+                    # elif 'xmlResponse' in keys:
+                    #     testEndpoint = XmlEndpoint(parent=masterKey)
+                    #     testEndpoint.xmlResponse = TE.get('xmlResponse')
+                    # elif 'jsonResponse' in keys:
+                    #     testEndpoint = JsonEndpoint(parent=masterKey)
+                    #     testEndpoint.jsonResponse = TE.get('jsonResponse')
+                    # elif 'responseData' in keys:
+                    #     # There was no response to the original request (likely no connectivity)
+                    #     # Here we set to a null json response.
+                    #     testEndpoint = JsonEndpoint(parent=masterKey)
+                    #     testEndpoint.jsonResponse = None
+                    #
+                    # if any(['imageResponse' in keys, 'xmlResponse' in keys, 'jsonResponse' in keys, 'responseData' in keys]):
+                    #     testEndpoint.testID = TE.get('testID')
+                    #     testEndpoint.parentID = TE.get('parentID')
+                    #     testEndpoint.startDatetime = datetime.utcfromtimestamp(float(TE.get('startDatetime')))
+                    #     testEndpoint.finishDatetime = datetime.utcfromtimestamp(float(TE.get('finishDatetime')))
+                    #     testEndpoint.success = bool(TE.get('success'))
+                    #     testEndpoint.comment = TE.get('comment')
+                    #     testEndpoint.server = TE.get('server')
+                    #     testEndpoint.dataset = TE.get('dataset')
+                    #     testEndpoint.returnType = TE.get('returnType')
+                    #     testEndpoint.testName = TE.get('testName')
+                    #     testEndpoint.httpMethod = TE.get('httpMethod')
+                    #     testEndpoint.testedURL = TE.get('testedURL')
+                    #     testEndpoint.responseCode = int(TE.get('responseCode'))
+                    #     testEndpoint.errorResponse = TE.get('errorResponse')
+                    #     testEndpoint.analysed = AnalysisEnum.UNANALYSED
+                    #
+                    #     stats.countTestEndpoints += 1
+                    #     stats.totalTestEndpointTime += (TE.get('finishDatetime') - TE.get('startDatetime'))
+                    #     if testEndpoint.success:
+                    #         stats.countTestEndpointsSuccessful += 1
+                    #
+                    #     listTestEndpoints.append(testEndpoint)
 
                 listNetworkResults = []
                 for NR in TM.get('networkResults', []):
@@ -506,14 +551,97 @@ class Database(webapp2.RequestHandler):
             campaignKey.delete()
 
         except Exception as e:
+            self.response.set_status(555, message="Custom error response code.")
             self.response.headers['Content-Type'] = 'text/plain'
             self.response.write('Sorry, JSON writing error condition ' +
                                 'encountered!\nNo data for you!\n\n' +
                                 e.message + '\n\n')
         else:
-            self.response.set_status(555, message="Custom error response code.")
             self.response.headers['Content-Type'] = 'text/plain'
             self.response.write('Deleted TestCampaign; ' + campaignName)
+
+
+class StoreReferences(webapp2.RequestHandler):
+    """A very simple class to add a task to the default task queue
+    to store the referenceObjects in the folder.
+    The idea being to let the app start task execution when the CPU is
+    not under heavy load."""
+    def get(self):
+        try:
+            campaignName = self.request.get('campaignName')
+            campaignKey = ndb.Key(TestCampaign, campaignName)
+
+        except Exception as e:
+            self.response.set_status(555, message="Custom error response code.")
+            self.response.headers['Content-Type'] = 'text/plain'
+            self.response.write('Missing or invalid parameter in request.\n' +
+                                'Please provide ?campaignName=\n\n' +
+                                e.message + '\n\n')
+        else:
+            taskqueue.add(url='/StoreReferencesWorker', params={'campaignName': campaignName})
+
+
+class StoreReferencesWorker(webapp2.RequestHandler):
+    """A class to copy reference objects from text files to the
+    Google App Engine datastore. Only needed once, in theory."""
+    def get(self):
+        try:
+            campaignName = self.request.get('campaignName')
+            campaignKey = ndb.Key(TestCampaign, campaignName)
+
+        except Exception as e:
+            self.response.set_status(555, message="Custom error response code.")
+            self.response.headers['Content-Type'] = 'text/plain'
+            self.response.write('Missing or invalid parameter in request.\n' +
+                                'Please provide ?campaignName=\n\n' +
+                                e.message + '\n\n')
+        else:
+            # Get the path to this file and get the ReferenceObjects folder by
+            # appending the extra folder path component.
+            appPath = os.path.split(__file__)[0]
+            referenceFolderPath = os.path.join(appPath, 'ReferenceObjects')
+
+            for root, directories, filenames in os.walk(referenceFolderPath):
+                for filename in filenames:
+                    # Split the file into its name and extension
+                    filenameParts = os.path.splitext(filename)
+
+                    # If this is a text file proceed, otherwise skip.
+                    if filenameParts[1].lower() == '.txt':
+                        # Split the file name into all the test properties.
+                        properties = filenameParts[0].split("_")
+
+                        # Check whether a referenceObject already exists for
+                        # this test, if so we'll overwrite instead.
+                        referenceObject = None
+
+                        referenceObject = ReferenceObject.query(ReferenceObject.server == properties[0], ReferenceObject.dataset == properties[1], ReferenceObject.name == properties[2], ReferenceObject.httpMethod == properties[3], ReferenceObject.returnType == properties[4]).get()
+
+                        if referenceObject is None:
+                            # There is no pre-existing referenceObject
+                            # go ahead and create a new one.
+                            referenceObject = ReferenceObject(parent=campaignKey)
+
+                            referenceObject.server = properties[0]
+                            referenceObject.dataset = properties[1]
+                            referenceObject.name = properties[2]
+                            referenceObject.httpMethod = properties[3]
+                            referenceObject.returnType = properties[4]
+
+                        # Join the filename to the root directory path
+                        referenceFilePath = os.path.join(root, filename)
+
+                        # Read the file contents into the referenceText property
+                        with open(referenceFilePath, 'r') as referenceText:
+                            referenceObject.reference = referenceText.read()
+
+                        # Store the new data.
+                        key = referenceObject.put()
+
+            # Complete success, write output.
+            self.response.headers['Content-Type'] = 'text/plain'
+            self.response.write('Stored referenceObjects for ' + campaignName)
+
 
 
 class Analyse(webapp2.RequestHandler):
@@ -550,11 +678,14 @@ class Analyse(webapp2.RequestHandler):
                 If the request includes a testID attribute fetch that specific
                 test."""
                 testID = self.request.get('testID')
+                print testID
 
                 if testID is not None:
                     testEndpoint = TestEndpoint.query(TestEndpoint.testID == testID, TestEndpoint.analysed == 0).get()
                 else:
                     testEndpoint = TestEndpoint.query(TestEndpoint.analysed == 0).get()
+
+                print testEndpoint
 
                 if testEndpoint is not None:
                     # Grab the parent TestMaster
@@ -566,16 +697,22 @@ class Analyse(webapp2.RequestHandler):
                     all the returns by time (ascending or descending depending)
                     and the .get() function returns the first."""
                     preTestLocation = LocationResult.query(ancestor=testMaster.key, LocationResult.datetime < testEndpoint.startDatetime).order(-LocationResult.datetime).get()
+                    print preTestLocation
 
                     postTestLocation = LocationResult.query(ancestor=testMaster.key, LocationResult.datetime > testEndpoint.finishDatetime).order(LocationResult.datetime).get()
+                    print postTestLocation
 
                     preTestNetwork = NetworkResult.query(ancestor=testMaster.key, NetworkResult.datetime < testEndpoint.startDatetime).order(-NetworkResult.datetime).get()
+                    print preTestNetwork
 
                     postTestNetwork = NetworkResult.query(ancestor=testMaster.key, NetworkResult.datetime > testEndpoint.finishDatetime).order(NetworkResult.datetime).get()
+                    print postTestNetwork
 
                     preTestPing = PingResult.query(ancestor=testMaster.key, PingResult.datetime < testEndpoint.startDatetime).order(-PingResult.datetime).get()
+                    print preTestPing
 
                     postTestPing = PingResult.query(ancestor=testMaster.key, PingResult.datetime > testEndpoint.finishDatetime).order(PingResult.datetime).get()
+                    print postTestPing
 
                     # Each TestEndpoint should have a LocationTest, NetworkTest and
                     # PingTest before AND afterwards, if all six are present proceed
@@ -586,21 +723,32 @@ class Analyse(webapp2.RequestHandler):
 
                         # Assign all the TestEndpoint's relevant attributes to Vector™
                         vector.test = testEndpoint
-                        vector.testName = testEndpoint.testName
-                        vector.testStartDateTime = testEndpoint.startDatetime
-                        vector.testFinishDateTime = testEndpoint.finishDatetime
-                        vector.testResponseTime = timedelta(testEndpoint.finishDatetime - testEndpoint.startDatetime).total_seconds()
-                        vector.testServer = testEndpoint.server
-                        vector.testDataset = testEndpoint.dataset
-                        vector.testHttpMethod = testEndpoint.httpMethod
-                        vector.testReturnType = testEndpoint.returnType
-                        vector.testResponseCode = testEndpoint.responseCode
-                        vector.testOnDeviceSuccess = testEndpoint.success
+                        vector.name = testEndpoint.testName
+                        vector.startDateTime = testEndpoint.startDatetime
+                        vector.finishDateTime = testEndpoint.finishDatetime
+                        vector.responseTime = timedelta(testEndpoint.finishDatetime - testEndpoint.startDatetime).total_seconds()
+                        vector.server = testEndpoint.server
+                        vector.dataset = testEndpoint.dataset
+                        vector.httpMethod = testEndpoint.httpMethod
+                        vector.returnType = testEndpoint.returnType
+                        vector.responseCode = testEndpoint.responseCode
+                        vector.onDeviceSuccess = testEndpoint.success
+
+                        # Get the 'True' referenceObject from the store
+                        referenceObject = ReferenceObject.query(ReferenceObject.server == vector.server, ReferenceObject.dataset == vector.dataset, ReferenceObject.name == vector.name, ReferenceObject.httpMethod == vector.httpMethod, ReferenceObject.returnType == vector.returnType).get()
+
+                        # Default to false for reference check truthiness.
+                        vector.referenceCheckSuccess = False
+
+                        # Check whether the referenceObject's text can
+                        # be found in the testEndpoint's response.
+                        if referenceObject is not None and referenceObject.reference in testEndpoint.responseData:
+                            vector.referenceCheckSuccess = True
 
                         # Assign the TestMaster's attributes
-                        vector.testDeviceType = testMaster.deviceType
-                        vector.testDeviceID = testMaster.deviceID
-                        vector.testIOSVersion = testMaster.iOSVersion
+                        vector.deviceType = testMaster.deviceType
+                        vector.deviceID = testMaster.deviceID
+                        vector.iOSVersion = testMaster.iOSVersion
 
                         # Assign all the supporting tests to the Vector™
                         vector.preTestLocation = preTestLocation
@@ -612,18 +760,26 @@ class Analyse(webapp2.RequestHandler):
 
                         # Calculate the change in environment during the test
                         vector.distance = HaversineDistance(preTestLocation.location, postTestLocation.location)
+                        print vector.distance
+
                         vector.speed = vector.distance / timedelta(postTestLocation.datetime - preTestLocation.datetime).total_seconds()
+                        print vector.speed
 
                         vector.pingChange = preTestPing.pingTime - postTestPing.pingTime
+                        print vector.pingChange
+
                         vector.networkChange = postTestNetwork.NetworkClass() - preTestNetwork.NetworkClass()
+                        print vector.networkChange
 
                         # All being well, we mark the testEndpoint object with
                         # the analysis SUCCESSFUL enum and put it back.
                         testEndpoint.analysed = AnalysisEnum.SUCCESSFUL
                         endpointKey = testEndpoint.put()
+                        print endpointKey
 
                         # The Vector™ object built successfully, so store it.
                         vectorKey = vector.put()
+                        print vectorKey
 
                         self.response.headers['Content-Type'] = 'text/plain'
                         self.response.write('Analysis complete!\n' +
@@ -636,6 +792,7 @@ class Analyse(webapp2.RequestHandler):
                         may ignore it in the future."""
                         testEndpoint.analysed = AnalysisEnum.IMPOSSIBLE
                         endpointKey = testEndpoint.put()
+                        print endpointKey
 
                         self.response.set_status(555, message="Custom error response code.")
                         self.response.headers['Content-Type'] = 'text/plain'
@@ -779,9 +936,10 @@ class GraphsPage(webapp2.RequestHandler):
                 graph = None
 
                 if graphName == 'graph1':
+                    pass
 
                 elif graphName == 'graph2':
-
+                    pass
 
 
                 self.response.headers['Content-Type'] = 'image/png'
@@ -800,6 +958,8 @@ class GraphsPage(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/servicetest', TestPage),
     ('/database', Database),
+    ('/storereferences', StoreReferences),
+    ('/StoreReferencesWorker', StoreReferencesWorker),
     ('/analyse', Analyse),
     ('/stats', StatsPage),
     ('/graphs', GraphsPage)
