@@ -26,6 +26,24 @@ def getCampaignKey(database_name=DEFAULT_CAMPAIGN_NAME):
         return key
 
 
+def HaversineDistance(location1, location2):
+    """Method to calculate Distance between two sets of Lat/Lon.
+    Modified from Amyth's StackOverflow answer of 22/5/2012;
+    http://stackoverflow.com/questions/10693699/calculate-distance-between-cities-find-surrounding-cities-based-on-geopt-in-p
+    """
+    lat1, lon1 = location1
+    lat2, lon2 = location2
+    earth = 6378137 #Earth's equatorial radius in metres.
+
+    #Calculate distance based on Haversine Formula
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = math.sin(dlat/2) * math.sin(dlat/2) + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2) * math.sin(dlon/2)
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    d = earth * c
+    return d
+
+
 class AnalysisEnum:
     """A three state enumeration to show whether a TestEndpoint object has
     been analysed already and whether it was analysed successfully.
@@ -215,29 +233,11 @@ class Vector(ndb.Model):
     preTestPing = ndb.StructuredProperty(PingResult)
     postTestPing = ndb.StructuredProperty(PingResult)
 
-    distance = ndb.ComputedProperty(lambda self: self.HaversineDistance(self.preTestLocation.location, self.postTestLocation.location))
-    speed = ndb.ComputedProperty(lambda self: self.distance / timedelta(self.postTestLocation.datetime - self.preTestLocation.datetime).total_seconds())
+    distance = ndb.FloatProperty()
+    speed = ndb.FloatProperty()
 
-    pingChange = ndb.ComputedProperty(lambda self: self.preTestPing.pingTime - self.postTestPing.pingTime)
-
-    networkChange = ndb.ComputedProperty(lambda self: self.postTestNetwork.NetworkClass() - self.preTestNetwork.NetworkClass())
-
-    def HaversineDistance(location1, location2):
-        """Method to calculate Distance between two sets of Lat/Lon.
-        Modified from Amyth's StackOverflow answer of 22/5/2012;
-        http://stackoverflow.com/questions/10693699/calculate-distance-between-cities-find-surrounding-cities-based-on-geopt-in-p
-        """
-        lat1, lon1 = location1
-        lat2, lon2 = location2
-        earth = 6378137 #Earth's equatorial radius in metres.
-
-        #Calculate distance based on Haversine Formula
-        dlat = math.radians(lat2 - lat1)
-        dlon = math.radians(lon2 - lon1)
-        a = math.sin(dlat/2) * math.sin(dlat/2) + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2) * math.sin(dlon/2)
-        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-        d = earth * c
-        return d
+    pingChange = ndb.IntegerProperty()
+    networkChange = ndb.IntegerProperty()
 
 
 class CampaignStats(ndb.Model):
@@ -610,12 +610,19 @@ class Analyse(webapp2.RequestHandler):
                         vector.preTestPing = preTestPing
                         vector.postTestPing = postTestPing
 
+                        # Calculate the change in environment during the test
+                        vector.distance = HaversineDistance(preTestLocation.location, postTestLocation.location)
+                        vector.speed = vector.distance / timedelta(postTestLocation.datetime - preTestLocation.datetime).total_seconds()
+
+                        vector.pingChange = preTestPing.pingTime - postTestPing.pingTime
+                        vector.networkChange = postTestNetwork.NetworkClass() - preTestNetwork.NetworkClass()
+
                         # All being well, we mark the testEndpoint object with
                         # the analysis SUCCESSFUL enum and put it back.
                         testEndpoint.analysed = AnalysisEnum.SUCCESSFUL
                         endpointKey = testEndpoint.put()
 
-                        # The Vector™ object is successfully built, so we store it.
+                        # The Vector™ object built successfully, so store it.
                         vectorKey = vector.put()
 
                         self.response.headers['Content-Type'] = 'text/plain'
