@@ -1,7 +1,7 @@
 # Libraries available on Google cloud service.
 import webapp2
-import matplotlib
 import os
+# import matplotlib
 
 # Google's appengine python libraries.
 from google.appengine.ext import ndb
@@ -647,13 +647,13 @@ class StoreReferencesWorker(webapp2.RequestHandler):
 class Analyse(webapp2.RequestHandler):
     """A class that takes the point based information in each of the
     EndpointTests, LocationTests, NetworkTests and PingTests and
-    combines them into line objects called Vectors™.
-    Each Vector™ consists of the two LocationTests either side of an
+    combines them into line objects called Vectors.
+    Each Vector consists of the two LocationTests either side of an
     EndpointTest, determining distance, speed and direction. It gains
     PingTest and NetworkTest results as a vector of, constant, improving
     or degrading signal. The EndpointResult in the middle is the focus,
     its outcomes being compared to the motion and changing signal environment
-    of the Vector™.
+    of the Vector.
     This class builds and stores the vectors. Designed to be called by
     a Google App Engine task, a request scheduled according to processor
     availability rather than dependant on a request from the internet."""
@@ -696,32 +696,32 @@ class Analyse(webapp2.RequestHandler):
                     parent and a time greater than the EndpointTest's time. It sorts
                     all the returns by time (ascending or descending depending)
                     and the .get() function returns the first."""
-                    preTestLocation = LocationResult.query(ancestor=testMaster.key, LocationResult.datetime < testEndpoint.startDatetime).order(-LocationResult.datetime).get()
+                    preTestLocation = LocationResult.query(ancestor=testMaster.key).filter(LocationResult.datetime < testEndpoint.startDatetime).order(-LocationResult.datetime).get()
                     print preTestLocation
 
-                    postTestLocation = LocationResult.query(ancestor=testMaster.key, LocationResult.datetime > testEndpoint.finishDatetime).order(LocationResult.datetime).get()
+                    postTestLocation = LocationResult.query(ancestor=testMaster.key).filter(LocationResult.datetime > testEndpoint.finishDatetime).order(LocationResult.datetime).get()
                     print postTestLocation
 
-                    preTestNetwork = NetworkResult.query(ancestor=testMaster.key, NetworkResult.datetime < testEndpoint.startDatetime).order(-NetworkResult.datetime).get()
+                    preTestNetwork = NetworkResult.query(ancestor=testMaster.key).filter(NetworkResult.datetime < testEndpoint.startDatetime).order(-NetworkResult.datetime).get()
                     print preTestNetwork
 
-                    postTestNetwork = NetworkResult.query(ancestor=testMaster.key, NetworkResult.datetime > testEndpoint.finishDatetime).order(NetworkResult.datetime).get()
+                    postTestNetwork = NetworkResult.query(ancestor=testMaster.key).filter(NetworkResult.datetime > testEndpoint.finishDatetime).order(NetworkResult.datetime).get()
                     print postTestNetwork
 
-                    preTestPing = PingResult.query(ancestor=testMaster.key, PingResult.datetime < testEndpoint.startDatetime).order(-PingResult.datetime).get()
+                    preTestPing = PingResult.query(ancestor=testMaster.key).filter(PingResult.datetime < testEndpoint.startDatetime).order(-PingResult.datetime).get()
                     print preTestPing
 
-                    postTestPing = PingResult.query(ancestor=testMaster.key, PingResult.datetime > testEndpoint.finishDatetime).order(PingResult.datetime).get()
+                    postTestPing = PingResult.query(ancestor=testMaster.key).filter(PingResult.datetime > testEndpoint.finishDatetime).order(PingResult.datetime).get()
                     print postTestPing
 
                     # Each TestEndpoint should have a LocationTest, NetworkTest and
                     # PingTest before AND afterwards, if all six are present proceed
                     if preTestLocation and postTestLocation and preTestNetwork and postTestNetwork and preTestPing and postTestPing:
 
-                        # Create a new Vector™ analysis data structure.
+                        # Create a new Vector analysis data structure.
                         vector = Vector(parent=campaignKey)
 
-                        # Assign all the TestEndpoint's relevant attributes to Vector™
+                        # Assign all the TestEndpoint's relevant attributes to Vector
                         vector.test = testEndpoint
                         vector.name = testEndpoint.testName
                         vector.startDateTime = testEndpoint.startDatetime
@@ -750,7 +750,7 @@ class Analyse(webapp2.RequestHandler):
                         vector.deviceID = testMaster.deviceID
                         vector.iOSVersion = testMaster.iOSVersion
 
-                        # Assign all the supporting tests to the Vector™
+                        # Assign all the supporting tests to the Vector
                         vector.preTestLocation = preTestLocation
                         vector.postTestLocation = postTestLocation
                         vector.preTestNetwork = preTestNetwork
@@ -777,7 +777,7 @@ class Analyse(webapp2.RequestHandler):
                         endpointKey = testEndpoint.put()
                         print endpointKey
 
-                        # The Vector™ object built successfully, so store it.
+                        # The Vector object built successfully, so store it.
                         vectorKey = vector.put()
                         print vectorKey
 
@@ -921,7 +921,7 @@ class GraphsPage(webapp2.RequestHandler):
             campaignName = self.request.get('campaignName')
             campaignKey = getCampaignKey(campaignName)
             graphName = self.request.get('graphName')
-            if !graphName in ('graph1', 'graph2'):
+            if graphName not in ('graph1', 'graph2'):
                 raise ValueError('No such graph as ' + graphName +
                                  '. This is a custom exception.')
 
