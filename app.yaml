@@ -24,11 +24,17 @@ handlers:
 - url: /database
   script: landgateapitest.app
 
+- url: /storereferences
+  script: landgateapitest.app
+
+- url: /storereferencesworker
+  script: landgateapitest.app
+
 - url: /.*
   script: landgateapitest.app
 
 libraries:
 - name: webapp2
   version: 'latest'
- #- name: matplotlib
- #  version: 'latest'
+- name: matplotlib
+  version: 'latest'

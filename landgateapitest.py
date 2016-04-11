@@ -1,7 +1,7 @@
 # Libraries available on Google cloud service.
 import webapp2
 import os
-# import matplotlib
+import matplotlib
 
 # Google's appengine python libraries.
 from google.appengine.ext import ndb
@@ -457,7 +457,7 @@ class Database(webapp2.RequestHandler):
                 # Add an analysis task to the default queue for each
                 # endpoint test completed.
                 for endpoint in listTestEndpoints:
-                    taskqueue.add(url='/analyse', params={'campaignName': campaignName, 'testID': endpoint.testID})
+                    taskqueue.add(url='/analyse', method='GET', params={'campaignName': campaignName, 'testID': endpoint.testID})
 
             self.response.headers['Content-Type'] = 'text/plain'
             self.response.write('Results successfully uploaded.\n' +
@@ -578,7 +578,10 @@ class StoreReferences(webapp2.RequestHandler):
                                 'Please provide ?campaignName=\n\n' +
                                 e.message + '\n\n')
         else:
-            taskqueue.add(url='/StoreReferencesWorker', params={'campaignName': campaignName})
+            taskqueue.add(url='/storereferencesworker', method='GET', params={'campaignName': campaignName})
+            self.response.headers['Content-Type'] = 'text/plain'
+            self.response.write('Task added to store referenceObjects for ' + campaignName)
+
 
 
 class StoreReferencesWorker(webapp2.RequestHandler):
@@ -959,7 +962,7 @@ app = webapp2.WSGIApplication([
     ('/servicetest', TestPage),
     ('/database', Database),
     ('/storereferences', StoreReferences),
-    ('/StoreReferencesWorker', StoreReferencesWorker),
+    ('/storereferencesworker', StoreReferencesWorker),
     ('/analyse', Analyse),
     ('/stats', StatsPage),
     ('/graphs', GraphsPage)
