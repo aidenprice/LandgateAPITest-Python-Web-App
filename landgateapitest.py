@@ -15,6 +15,10 @@ from datetime import datetime
 from datetime import timedelta
 from calendar import timegm
 
+# Matplotlib OO library imports
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
+
 # Constants and helper classes and functions
 
 DEFAULT_CAMPAIGN_NAME = 'production_campaign'
@@ -27,13 +31,50 @@ def getCampaignKey(database_name=DEFAULT_CAMPAIGN_NAME):
         return key
 
 
+def NetworkClass(connectionType):
+    """Classifies mobile broadband networks by their generation,
+    i.e. 3.5G, 4G etc as float values.
+    N.B. Assume 5 for wifi connections."""
+    generation = 0.0
+
+    if connectionType == 'CTRadioAccessTechnologyGPRS':
+        generation = 2.5
+    elif connectionType == 'CTRadioAccessTechnologyCDMA1x':
+        generation = 2.5
+    elif connectionType == 'CTRadioAccessTechnologyEdge':
+        generation = 2.75
+    elif connectionType == 'CTRadioAccessTechnologyWCDMA':
+        generation = 3.0
+    elif connectionType == 'CTRadioAccessTechnologyCDMAEVDORev0':
+        generation = 3.0
+    elif connectionType == 'CTRadioAccessTechnologyeHRPD':
+        generation = 3.0
+    elif connectionType == 'CTRadioAccessTechnologyHSDPA':
+        generation = 3.5
+    elif connectionType == 'CTRadioAccessTechnologyHSUPA':
+        generation = 3.5
+    elif connectionType == 'CTRadioAccessTechnologyCDMAEVDORevA':
+        generation = 3.5
+    elif connectionType == 'CTRadioAccessTechnologyCDMAEVDORevB':
+        generation = 3.75
+    elif connectionType == 'CTRadioAccessTechnologyLTE':
+        generation = 4.0
+    elif connectionType == 'Wifi':
+        generation = 5.0
+    return generation
+
+
 def HaversineDistance(location1, location2):
     """Method to calculate Distance between two sets of Lat/Lon.
     Modified from Amyth's StackOverflow answer of 22/5/2012;
     http://stackoverflow.com/questions/10693699/calculate-distance-between-cities-find-surrounding-cities-based-on-geopt-in-p
     """
-    lat1, lon1 = location1
-    lat2, lon2 = location2
+    lat1 = location1.lat
+    lon1 = location1.lon
+    # lat1, lon1 = location1
+    lat2 = location2.lat
+    lon2 = location2.lon
+    # lat2, lon2 = location2
     earth = 6378137 #Earth's equatorial radius in metres.
 
     #Calculate distance based on Haversine Formula
@@ -77,7 +118,6 @@ class TestCampaign(ndb.Model):
     """TestCampaign is a superclass meant to link many TestMasters
     by a single parent ID."""
     campaignName = ndb.StringProperty()
-    # TestMasters - a list of all the TestMaster objects, usually just one.
 
 
 class ResultObject(polymodel.PolyModel):
@@ -98,8 +138,7 @@ class TestMaster(ResultObject):
     deviceID = ndb.StringProperty()
     iOSVersion = ndb.StringProperty()
     # endpointResults - a list of TestEndpoint subclass objects, normally dozens
-    #                 of them. Must be one of ImageEndpoint, XmlEndpoint
-    #                 or JsonEndpoint.
+    #                   of them.
     # networkResults - a list of NetworkResult objects.
     # locationResults - a list of LocationResult objects.
     # pingResults - a list of PingResult objects.
@@ -122,7 +161,8 @@ class TestEndpoint(ResultObject):
     analysed = ndb.IntegerProperty()
 
 """Previously we needed separate subclasses of each TestEndpoint response
-type as they were different properties (JsonProperty(), ImageProperty() and StringProperty()).
+type as their responseData were stored in different properties
+(JsonProperty(), ImageProperty() and StringProperty()).
 It was recently discovered that the best method is make them all
 TextProperty()'s so concrete subclasses aren't necessary anymore."""
 # sub-subclasses for json, xml, images
@@ -157,39 +197,6 @@ class NetworkResult(ResultObject):
     carrierName = ndb.StringProperty()
     cellID = ndb.StringProperty()
 
-    def NetworkClass():
-        """Classifies mobile broadband networks by their generation,
-        i.e. 3.5G, 4G etc as float values.
-        N.B. Assume 5 for wifi connections."""
-        generation = 0.0
-
-        if self.connectionType == 'CTRadioAccessTechnologyGPRS':
-            generation = 2.5
-        elif self.connectionType == 'CTRadioAccessTechnologyCDMA1x':
-            generation = 2.5
-        elif self.connectionType == 'CTRadioAccessTechnologyEdge':
-            generation = 2.75
-        elif self.connectionType == 'CTRadioAccessTechnologyWCDMA':
-            generation = 3.0
-        elif self.connectionType == 'CTRadioAccessTechnologyCDMAEVDORev0':
-            generation = 3.0
-        elif self.connectionType == 'CTRadioAccessTechnologyeHRPD':
-            generation = 3.0
-        elif self.connectionType == 'CTRadioAccessTechnologyHSDPA':
-            generation = 3.5
-        elif self.connectionType == 'CTRadioAccessTechnologyHSUPA':
-            generation = 3.5
-        elif self.connectionType == 'CTRadioAccessTechnologyCDMAEVDORevA':
-            generation = 3.5
-        elif self.connectionType == 'CTRadioAccessTechnologyCDMAEVDORevB':
-            generation = 3.75
-        elif self.connectionType == 'CTRadioAccessTechnologyLTE':
-            generation = 4.0
-        elif self.connectionType == 'Wifi':
-            generation = 5.0
-
-        return generation
-
 
 class LocationResult(ResultObject):
     """A location and time associated with a TestMaster.
@@ -200,7 +207,7 @@ class LocationResult(ResultObject):
 class PingResult(ResultObject):
     """Holds the response time for a ping test."""
     pingedURL = ndb.StringProperty()
-    pingTime = ndb.IntegerProperty()
+    pingTime = ndb.FloatProperty()
 
 
 class ReferenceObject(ndb.Model):
@@ -252,8 +259,8 @@ class Vector(ndb.Model):
     distance = ndb.FloatProperty()
     speed = ndb.FloatProperty()
 
-    pingChange = ndb.IntegerProperty()
-    networkChange = ndb.IntegerProperty()
+    pingChange = ndb.FloatProperty()
+    networkChange = ndb.FloatProperty()
 
 
 class CampaignStats(ndb.Model):
@@ -269,7 +276,8 @@ class CampaignStats(ndb.Model):
     countNetworkResults = ndb.IntegerProperty()
     countLocationResults = ndb.IntegerProperty()
     countPingResults = ndb.IntegerProperty()
-    totalPingTime = ndb.IntegerProperty()
+    countPingResultsSuccessful = ndb.IntegerProperty()
+    totalPingTime = ndb.FloatProperty()
 
 
 # Page classes
@@ -300,9 +308,30 @@ class Database(webapp2.RequestHandler):
             campaignName = dictResults.get('campaignName')
             campaignKey = getCampaignKey(campaignName)
 
+            # Get the CampaignStats record for this campaign.
             stats_query = CampaignStats.query(CampaignStats.campaignName == campaignName)
+
             stats = stats_query.get()
 
+            # There is no extant CampaignStats record for this campaign.
+            # Instantiate one with blank values.
+            if stats is None:
+                stats = CampaignStats(parent=campaignKey)
+                stats.campaignName = campaignName
+                stats.countTestMasters = 0
+                stats.allDeviceTypes = ""
+                stats.allOSVersions = ""
+                stats.countTestEndpoints = 0
+                stats.totalTestEndpointTime = 0.0
+                stats.countTestEndpointsSuccessful = 0
+                stats.countNetworkResults = 0
+                stats.countLocationResults = 0
+                stats.countPingResults = 0
+                stats.countPingResultsSuccessful = 0
+                stats.totalPingTime = 0
+
+            # Loop through all the TestMasters and their children
+            # creating database records and updating stats as we go.
             for TM in dictResults.get('TestMasters', []):
                 testMaster = TestMaster(parent=campaignKey)
                 testMaster.testID = TM.get('testID')
@@ -350,8 +379,7 @@ class Database(webapp2.RequestHandler):
 
                     stats.countTestEndpoints += 1
                     stats.totalTestEndpointTime += (TE.get('finishDatetime') - TE.get('startDatetime'))
-                    if testEndpoint.success:
-                        stats.countTestEndpointsSuccessful += 1
+                    stats.countTestEndpointsSuccessful += testEndpoint.success
 
                     listTestEndpoints.append(testEndpoint)
 
@@ -439,9 +467,10 @@ class Database(webapp2.RequestHandler):
                     pingResult.success = bool(PR.get('success'))
                     pingResult.comment = PR.get('comment')
                     pingResult.pingedURL = PR.get('pingedURL')
-                    pingResult.pingTime = int(PR.get('pingTime'))
+                    pingResult.pingTime = float(PR.get('pingTime'))
 
                     stats.countPingResults += 1
+                    stats.countPingResultsSuccessful += pingResult.success
                     stats.totalPingTime += pingResult.pingTime
 
                     listPingResults.append(pingResult)
@@ -453,6 +482,7 @@ class Database(webapp2.RequestHandler):
                 listNetworkKeys = ndb.put_multi(listNetworkResults)
                 listLocationKeys = ndb.put_multi(listLocationResults)
                 listPingKeys = ndb.put_multi(listPingResults)
+                stats.put()
 
                 # Add an analysis task to the default queue for each
                 # endpoint test completed.
@@ -490,8 +520,8 @@ class Database(webapp2.RequestHandler):
                                 e.message + '\n\n')
         else:
             try:
-                database_query = TestMaster.query(ancestor=campaignKey).order(TestMaster.startDatetime)
-                listTestMasters = database_query.fetch(20)
+                database_query = TestMaster.query(ancestor=campaignKey)
+                listTestMasters = database_query.fetch(1)
                 listOutputTestMasters = []
                 for TM in listTestMasters:
                     dictMaster = TM.to_dict()
@@ -681,14 +711,11 @@ class Analyse(webapp2.RequestHandler):
                 If the request includes a testID attribute fetch that specific
                 test."""
                 testID = self.request.get('testID')
-                print testID
 
                 if testID is not None:
                     testEndpoint = TestEndpoint.query(TestEndpoint.testID == testID, TestEndpoint.analysed == 0).get()
                 else:
                     testEndpoint = TestEndpoint.query(TestEndpoint.analysed == 0).get()
-
-                print testEndpoint
 
                 if testEndpoint is not None:
                     # Grab the parent TestMaster
@@ -700,27 +727,26 @@ class Analyse(webapp2.RequestHandler):
                     all the returns by time (ascending or descending depending)
                     and the .get() function returns the first."""
                     preTestLocation = LocationResult.query(ancestor=testMaster.key).filter(LocationResult.datetime < testEndpoint.startDatetime).order(-LocationResult.datetime).get()
-                    print preTestLocation
+                    # print preTestLocation
 
                     postTestLocation = LocationResult.query(ancestor=testMaster.key).filter(LocationResult.datetime > testEndpoint.finishDatetime).order(LocationResult.datetime).get()
-                    print postTestLocation
+                    # print postTestLocation
 
                     preTestNetwork = NetworkResult.query(ancestor=testMaster.key).filter(NetworkResult.datetime < testEndpoint.startDatetime).order(-NetworkResult.datetime).get()
-                    print preTestNetwork
+                    # print preTestNetwork
 
                     postTestNetwork = NetworkResult.query(ancestor=testMaster.key).filter(NetworkResult.datetime > testEndpoint.finishDatetime).order(NetworkResult.datetime).get()
-                    print postTestNetwork
+                    # print postTestNetwork
 
                     preTestPing = PingResult.query(ancestor=testMaster.key).filter(PingResult.datetime < testEndpoint.startDatetime).order(-PingResult.datetime).get()
-                    print preTestPing
+                    # print preTestPing
 
                     postTestPing = PingResult.query(ancestor=testMaster.key).filter(PingResult.datetime > testEndpoint.finishDatetime).order(PingResult.datetime).get()
-                    print postTestPing
+                    # print postTestPing
 
                     # Each TestEndpoint should have a LocationTest, NetworkTest and
                     # PingTest before AND afterwards, if all six are present proceed
                     if preTestLocation and postTestLocation and preTestNetwork and postTestNetwork and preTestPing and postTestPing:
-
                         # Create a new Vector analysis data structure.
                         vector = Vector(parent=campaignKey)
 
@@ -729,7 +755,7 @@ class Analyse(webapp2.RequestHandler):
                         vector.name = testEndpoint.testName
                         vector.startDateTime = testEndpoint.startDatetime
                         vector.finishDateTime = testEndpoint.finishDatetime
-                        vector.responseTime = timedelta(testEndpoint.finishDatetime - testEndpoint.startDatetime).total_seconds()
+                        vector.responseTime = (testEndpoint.finishDatetime - testEndpoint.startDatetime).total_seconds()
                         vector.server = testEndpoint.server
                         vector.dataset = testEndpoint.dataset
                         vector.httpMethod = testEndpoint.httpMethod
@@ -740,13 +766,21 @@ class Analyse(webapp2.RequestHandler):
                         # Get the 'True' referenceObject from the store
                         referenceObject = ReferenceObject.query(ReferenceObject.server == vector.server, ReferenceObject.dataset == vector.dataset, ReferenceObject.name == vector.name, ReferenceObject.httpMethod == vector.httpMethod, ReferenceObject.returnType == vector.returnType).get()
 
+                        print vector.server + " " + vector.dataset + " " + vector.name + " " + vector.httpMethod + " " + vector.returnType
+
                         # Default to false for reference check truthiness.
                         vector.referenceCheckSuccess = False
 
                         # Check whether the referenceObject's text can
                         # be found in the testEndpoint's response.
-                        if referenceObject is not None and referenceObject.reference in testEndpoint.responseData:
+                        responseData = testEndpoint.responseData.replace('\r\n', '').replace('\n', '')
+                        reference = referenceObject.reference
+                        print responseData
+                        print reference
+                        if referenceObject is not None and responseData in reference:
                             vector.referenceCheckSuccess = True
+
+                        print vector.referenceCheckSuccess
 
                         # Assign the TestMaster's attributes
                         vector.deviceType = testMaster.deviceType
@@ -762,27 +796,24 @@ class Analyse(webapp2.RequestHandler):
                         vector.postTestPing = postTestPing
 
                         # Calculate the change in environment during the test
-                        vector.distance = HaversineDistance(preTestLocation.location, postTestLocation.location)
-                        print vector.distance
+                        location1 = vector.preTestLocation.location
+                        location2 = vector.postTestLocation.location
+                        vector.distance = HaversineDistance(location1, location2)
 
-                        vector.speed = vector.distance / timedelta(postTestLocation.datetime - preTestLocation.datetime).total_seconds()
-                        print vector.speed
+                        vector.speed = vector.distance / (postTestLocation.datetime - preTestLocation.datetime).total_seconds()
 
-                        vector.pingChange = preTestPing.pingTime - postTestPing.pingTime
-                        print vector.pingChange
+                        vector.pingChange = vector.preTestPing.pingTime - vector.postTestPing.pingTime
 
-                        vector.networkChange = postTestNetwork.NetworkClass() - preTestNetwork.NetworkClass()
-                        print vector.networkChange
+                        vector.networkChange = (NetworkClass(vector.postTestNetwork.connectionType) - NetworkClass(vector.preTestNetwork.connectionType))
 
                         # All being well, we mark the testEndpoint object with
                         # the analysis SUCCESSFUL enum and put it back.
                         testEndpoint.analysed = AnalysisEnum.SUCCESSFUL
                         endpointKey = testEndpoint.put()
-                        print endpointKey
 
-                        # The Vector object built successfully, so store it.
+                        # Store the Vector object.
                         vectorKey = vector.put()
-                        print vectorKey
+                        print "Analysis SUCCESSFUL"
 
                         self.response.headers['Content-Type'] = 'text/plain'
                         self.response.write('Analysis complete!\n' +
@@ -795,7 +826,7 @@ class Analyse(webapp2.RequestHandler):
                         may ignore it in the future."""
                         testEndpoint.analysed = AnalysisEnum.IMPOSSIBLE
                         endpointKey = testEndpoint.put()
-                        print endpointKey
+                        print "Analysis IMPOSSIBLE"
 
                         self.response.set_status(555, message="Custom error response code.")
                         self.response.headers['Content-Type'] = 'text/plain'
@@ -888,19 +919,27 @@ class StatsPage(webapp2.RequestHandler):
                 #         countPingResults += 1
                 #         totalPingTime += PR.pingTime
 
+                print campaignName
+
                 stats = CampaignStats.query(CampaignStats.campaignName == campaignName).get()
 
-                dictStats['campaignName'] = stats.campaignName
-                dictStats['countTestMasters'] = stats.countTestMasters
-                dictStats['allDeviceTypes'] = stats.allDeviceTypes
-                dictStats['allOSVersions'] = stats.allOSVersions
-                dictStats['countTestEndpoints'] = stats.countTestEndpoints
-                dictStats['averageTestEndpointResponseTime'] = stats.totalTestEndpointTime / (stats.countTestEndpoints * 1.0)
-                dictStats['percentTestEndpointsSuccessful'] = ((stats.countTestEndpointsSuccessful * 1.0) / (stats.countTestEndpoints * 1.0)) * 100
-                dictStats['countNetworkResults'] = stats.countNetworkResults
-                dictStats['countLocationResults'] = stats.countLocationResults
-                dictStats['countPingResults'] = stats.countPingResults
-                dictStats['averagePingTime'] = (totalPingTime *1.0) / (countPingResults * 1.0)
+                print stats
+
+                if stats is not None:
+                    dictStats['campaignName'] = stats.campaignName
+                    dictStats['countTestMasters'] = stats.countTestMasters
+                    dictStats['allDeviceTypes'] = stats.allDeviceTypes
+                    dictStats['allOSVersions'] = stats.allOSVersions
+                    dictStats['countTestEndpoints'] = stats.countTestEndpoints
+                    dictStats['averageTestEndpointResponseTime'] = stats.totalTestEndpointTime / (stats.countTestEndpoints * 1.0)
+                    dictStats['percentTestEndpointsSuccessful'] = ((stats.countTestEndpointsSuccessful * 1.0) / (stats.countTestEndpoints * 1.0)) * 100
+                    dictStats['countNetworkResults'] = stats.countNetworkResults
+                    dictStats['countLocationResults'] = stats.countLocationResults
+                    dictStats['countPingResults'] = stats.countPingResults
+                    dictStats['averagePingTime'] = stats.totalPingTime / (stats.countPingResultsSuccessful * 1.0)
+                    dictStats['percentPingTestsSuccessful'] = ((stats.countPingResultsSuccessful * 1.0) / (stats.countPingResults * 1.0)) * 100
+                else:
+                    dictStats['campaignName'] = "No campaign found!"
 
 
                 self.response.headers['Content-Type'] = 'application/json'
@@ -923,8 +962,8 @@ class GraphsPage(webapp2.RequestHandler):
         try:
             campaignName = self.request.get('campaignName')
             campaignKey = getCampaignKey(campaignName)
-            graphName = self.request.get('graphName')
-            if graphName not in ('graph1', 'graph2'):
+            graphName = self.request.get('graphName').lower()
+            if graphName not in ('testtypepiecharts', 'graph2'):
                 raise ValueError('No such graph as ' + graphName +
                                  '. This is a custom exception.')
 
@@ -938,8 +977,18 @@ class GraphsPage(webapp2.RequestHandler):
             try:
                 graph = None
 
-                if graphName == 'graph1':
-                    pass
+                if graphName == 'testtypepiecharts':
+                    fig = Figure()
+                    canvas = FigureCanvas(fig)
+                    ax = fig.add_subplot(1, 1, 1)
+                    ax.plot([1,2,3])
+                    ax.set_title('Test Type Pie Charts')
+                    ax.grid(false)
+                    ax.set_xlabel('time')
+                    ax.set_ylabel('volts')
+                    fig.savefig()
+                    canvas.close()
+
 
                 elif graphName == 'graph2':
                     pass
