@@ -11,6 +11,7 @@ from google.appengine.api import taskqueue
 # Standard python libraries.
 import json
 import math
+import random
 from datetime import datetime
 from datetime import timedelta
 from calendar import timegm
@@ -975,27 +976,43 @@ class GraphsPage(webapp2.RequestHandler):
                                 e.message + '\n\n')
         else:
             try:
-                graph = None
+                fig = Figure()
+                canvas = FigureCanvas(fig)
 
                 if graphName == 'testtypepiecharts':
-                    fig = Figure()
-                    canvas = FigureCanvas(fig)
-                    ax = fig.add_subplot(1, 1, 1)
-                    ax.plot([1,2,3])
-                    ax.set_title('Test Type Pie Charts')
-                    ax.grid(false)
-                    ax.set_xlabel('time')
-                    ax.set_ylabel('volts')
-                    fig.savefig()
-                    canvas.close()
+                    listHttpMethods = Vector.query(ancestor=campaignKey, projection=[Vector.httpMethod]).fetch()
 
+                    listHttpMethodNames = Vector.query(ancestor=campaignKey, projection=[Vector.httpMethod], distinct=True).fetch()
+                    print listHttpMethodNames
+
+                    listHttpMethodCounts = []
+                    listHttpMethodColours = []
+
+                    for method in listHttpMethodNames:
+                        count = listHttpMethods.count(method)
+                        listHttpMethodCounts.append(count)
+                        listHttpMethodColours.append((random.random(), random.random(), random.random()))
+
+                    ax = fig.add_subplot(1, 1, 1)
+                    # ax.plot([1,2,3])
+                    ax.pie(listHttpMethodCounts, labels=listHttpMethodNames, colors=listHttpMethodColours, autopct='%1.1f%%', startangle=90)
+                    ax.set_title('Test Type Pie Charts')
+                    # ax.grid(false)
+                    # ax.set_xlabel('time')
+                    # ax.set_ylabel('volts')
 
                 elif graphName == 'graph2':
-                    pass
+                    listSpeeds = Vector.query(ancestor=campaignKey, projection=[Vector.speed]).fetch()
 
+                    listResponseTimes = Vector.query(ancestor=campaignKey, projection=[Vector.responseTime]).fetch()
+
+                    ax = fig.add_subplot(1, 1, 1)
+                    ax.scatter(listSpeeds,listResponseTimes)
 
                 self.response.headers['Content-Type'] = 'image/png'
-                self.response.write(graph)
+                self.response.write(fig.savefig("Graph.png"))
+
+                canvas.close()
 
             except Exception as e:
                 self.response.set_status(555, message="Custom error response code.")
