@@ -1,24 +1,28 @@
+# Standard python libraries.
+import json
+import math
+import random
+import cStringIO
+
+from datetime import datetime
+from datetime import timedelta
+from calendar import timegm
+
 # Libraries available on Google cloud service.
 import webapp2
 import os
 import matplotlib
+import numpy
+
+# Matplotlib OO library imports
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
+import matplotlib.cm as cm
 
 # Google's appengine python libraries.
 from google.appengine.ext import ndb
 from google.appengine.ext.ndb import polymodel
 from google.appengine.api import taskqueue
-
-# Standard python libraries.
-import json
-import math
-import random
-from datetime import datetime
-from datetime import timedelta
-from calendar import timegm
-
-# Matplotlib OO library imports
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-from matplotlib.figure import Figure
 
 # Constants and helper classes and functions
 
@@ -964,7 +968,7 @@ class GraphsPage(webapp2.RequestHandler):
             campaignName = self.request.get('campaignName')
             campaignKey = getCampaignKey(campaignName)
             graphName = self.request.get('graphName').lower()
-            if graphName not in ('testtypepiecharts', 'graph2'):
+            if graphName not in ('graph1', 'graph2', 'graph3', 'graph4'):
                 raise ValueError('No such graph as ' + graphName +
                                  '. This is a custom exception.')
 
@@ -978,45 +982,205 @@ class GraphsPage(webapp2.RequestHandler):
             try:
                 fig = Figure()
                 canvas = FigureCanvas(fig)
+                cmap = cm.Pastel2
 
-                if graphName == 'testtypepiecharts':
-                    listHttpMethods = Vector.query(ancestor=campaignKey, projection=[Vector.httpMethod]).fetch()
+                if graphName == 'graph1':
+                    # Graph 1 on same page
+                    listServerVectors = Vector.query(ancestor=campaignKey, projection=[Vector.server]).fetch()
 
-                    listHttpMethodNames = Vector.query(ancestor=campaignKey, projection=[Vector.httpMethod], distinct=True).fetch()
-                    print listHttpMethodNames
+                    listServers = [vector.server for vector in listServerVectors]
 
-                    listHttpMethodCounts = []
-                    listHttpMethodColours = []
+                    listServerNames = list(set(listServers))
 
-                    for method in listHttpMethodNames:
-                        count = listHttpMethods.count(method)
-                        listHttpMethodCounts.append(count)
-                        listHttpMethodColours.append((random.random(), random.random(), random.random()))
+                    listServerCounts = [listServers.count(server) for server in listServerNames]
 
-                    ax = fig.add_subplot(1, 1, 1)
-                    # ax.plot([1,2,3])
-                    ax.pie(listHttpMethodCounts, labels=listHttpMethodNames, colors=listHttpMethodColours, autopct='%1.1f%%', startangle=90)
-                    ax.set_title('Test Type Pie Charts')
-                    # ax.grid(false)
-                    # ax.set_xlabel('time')
-                    # ax.set_ylabel('volts')
+                    listServerColours = cmap(numpy.linspace(0., 1., len(listServerNames)))
+
+                    ax = fig.add_subplot(2, 2, 1)
+                    ax.pie(listServerCounts, labels=listServerNames, colors=listServerColours,  autopct='%1.1f%%', startangle=90)
+                    ax.set_aspect('equal')
+                    ax.set_title('Server Type')
+
+                    # Graph 2 on same page
+                    listHttpVectors = Vector.query(ancestor=campaignKey, projection=[Vector.httpMethod]).fetch()
+
+                    listHttpMethods = [vector.httpMethod for vector in listHttpVectors]
+
+                    listHttpMethodNames = list(set(listHttpMethods))
+
+                    listHttpMethodCounts = [listHttpMethods.count(method) for method in listHttpMethodNames]
+
+                    listHttpColours = cmap(numpy.linspace(0., 1., len(listHttpMethodNames)))
+
+                    ax = fig.add_subplot(2, 2, 2)
+                    ax.pie(listHttpMethodCounts, labels=listHttpMethodNames, colors=listHttpColours,  autopct='%1.1f%%', startangle=90)
+                    ax.set_aspect('equal')
+                    ax.set_title('HTTP Method')
+
+                    # Graph 3 on same page
+                    listNameVectors = Vector.query(ancestor=campaignKey, projection=[Vector.name]).fetch()
+
+                    listNames = [vector.name for vector in listNameVectors]
+
+                    listNameNames = list(set(listNames))
+
+                    listNameCounts = [listNames.count(name) for name in listNameNames]
+
+                    listNameColours = cmap(numpy.linspace(0., 1., len(listNameNames)))
+
+                    ax = fig.add_subplot(2, 2, 3)
+                    ax.pie(listNameCounts, labels=listNameNames, colors=listNameColours,  autopct='%1.1f%%', startangle=90)
+                    ax.set_aspect('equal')
+                    ax.set_title('Test Type Name')
+
+                    # Graph 4 on same page
+                    listReturnTypeVectors = Vector.query(ancestor=campaignKey, projection=[Vector.returnType]).fetch()
+
+                    listReturnTypes = [vector.returnType for vector in listReturnTypeVectors]
+
+                    listReturnTypeNames = list(set(listReturnTypes))
+
+                    listReturnTypeCounts = [listReturnTypes.count(returnType) for returnType in listReturnTypeNames]
+
+                    listReturnTypeColours = cmap(numpy.linspace(0., 1., len(listReturnTypeNames)))
+
+                    ax = fig.add_subplot(2, 2, 4)
+                    ax.pie(listReturnTypeCounts, labels=listReturnTypeNames, colors=listReturnTypeColours,  autopct='%1.1f%%', startangle=90)
+                    ax.set_aspect('equal')
+                    ax.set_title('Return Type')
 
                 elif graphName == 'graph2':
-                    listSpeeds = Vector.query(ancestor=campaignKey, projection=[Vector.speed]).fetch()
+                    # Graph 1 on same page
+                    listResponseCodeVectors = Vector.query(ancestor=campaignKey, projection=[Vector.responseCode]).fetch()
 
-                    listResponseTimes = Vector.query(ancestor=campaignKey, projection=[Vector.responseTime]).fetch()
+                    listResponseCodes = [vector.responseCode for vector in listResponseCodeVectors]
+
+                    listResponseCodeNames = list(set(listResponseCodes))
+
+                    listResponseCodeCounts = [listResponseCodes.count(responseCode) for responseCode in listResponseCodeNames]
+
+                    listResponseCodeColours = cmap(numpy.linspace(0., 1., len(listResponseCodeNames)))
+
+                    ax = fig.add_subplot(2, 2, 1)
+                    ax.pie(listResponseCodeCounts, labels=listResponseCodeNames, colors=listResponseCodeColours,  autopct='%1.1f%%', startangle=90)
+                    ax.set_aspect('equal')
+                    ax.set_title('Response Codes')
+
+                    # Graph 2 on same page
+                    listOnDeviceVectors = Vector.query(ancestor=campaignKey, projection=[Vector.onDeviceSuccess]).fetch()
+
+                    listOnDevices = [vector.onDeviceSuccess for vector in listOnDeviceVectors]
+
+                    listOnDeviceNames = list(set(listOnDevices))
+
+                    listOnDeviceCounts = [listOnDevices.count(onDeviceSuccess) for onDeviceSuccess in listOnDeviceNames]
+
+                    listOnDeviceColours = cmap(numpy.linspace(0., 1., len(listOnDeviceNames)))
+
+                    ax = fig.add_subplot(2, 2, 2)
+                    ax.pie(listOnDeviceCounts, labels=listOnDeviceNames, colors=listOnDeviceColours,  autopct='%1.1f%%', startangle=90)
+                    ax.set_aspect('equal')
+                    ax.set_title('On-Device Success')
+
+                    # Graph 3 on same page
+                    listReferenceCheckVectors = Vector.query(ancestor=campaignKey, projection=[Vector.referenceCheckSuccess]).fetch()
+
+                    listReferenceChecks = [vector.referenceCheckSuccess for vector in listReferenceCheckVectors]
+
+                    listReferenceCheckNames = list(set(listReferenceChecks))
+
+                    listReferenceCheckCounts = [listReferenceChecks.count(referenceCheckSuccess) for referenceCheckSuccess in listReferenceCheckNames]
+
+                    listReferenceCheckColours = cmap(numpy.linspace(0., 1., len(listReferenceCheckNames)))
+
+                    ax = fig.add_subplot(2, 2, 3)
+                    ax.pie(listReferenceCheckCounts, labels=listReferenceCheckNames, colors=listReferenceCheckColours,  autopct='%1.1f%%', startangle=90)
+                    ax.set_aspect('equal')
+                    ax.set_title('Reference Check Success')
+
+                elif graphName == 'graph3':
+                    # Graph 1 on same page
+                    listDeviceTypeVectors = Vector.query(ancestor=campaignKey, projection=[Vector.deviceType]).fetch()
+
+                    listDeviceTypes = [vector.deviceType for vector in listDeviceTypeVectors]
+
+                    listDeviceTypeNames = list(set(listDeviceTypes))
+
+                    listDeviceTypeCounts = [listDeviceTypes.count(deviceType) for deviceType in listDeviceTypeNames]
+
+                    listDeviceTypeColours = cmap(numpy.linspace(0., 1., len(listDeviceTypeNames)))
+
+                    ax = fig.add_subplot(2, 2, 1)
+                    ax.pie(listDeviceTypeCounts, labels=listDeviceTypeNames, colors=listDeviceTypeColours,  autopct='%1.1f%%', startangle=90)
+                    ax.set_aspect('equal')
+                    ax.set_title('Device Types')
+
+                    # Graph 2 on same page
+                    listiOSVersionVectors = Vector.query(ancestor=campaignKey, projection=[Vector.iOSVersion]).fetch()
+
+                    listiOSVersions = [vector.iOSVersion for vector in listiOSVersionVectors]
+
+                    listiOSVersionNames = list(set(listiOSVersions))
+
+                    listiOSVersionCounts = [listiOSVersions.count(iOSVersion) for iOSVersion in listiOSVersionNames]
+
+                    listiOSVersionColours = cmap(numpy.linspace(0., 1., len(listiOSVersionNames)))
+
+                    ax = fig.add_subplot(2, 2, 2)
+                    ax.pie(listiOSVersionCounts, labels=listiOSVersionNames, colors=listiOSVersionColours,  autopct='%1.1f%%', startangle=90)
+                    ax.set_aspect('equal')
+                    ax.set_title('iOS Versions on Test Device')
+
+                    # Graph 3 on same page
+                    listDeviceIDVectors = Vector.query(ancestor=campaignKey, projection=[Vector.deviceID]).fetch()
+
+                    listDeviceIDs = [vector.deviceID for vector in listDeviceIDVectors]
+
+                    listDeviceIDNames = list(set(listDeviceIDs))
+
+                    listDeviceIDCounts = [listDeviceIDs.count(deviceID) for deviceID in listDeviceIDNames]
+
+                    listDeviceIDColours = cmap(numpy.linspace(0., 1., len(listDeviceIDNames)))
+
+                    ax = fig.add_subplot(2, 2, 3)
+                    ax.pie(listDeviceIDCounts, labels=listDeviceIDNames, colors=listDeviceIDColours,  autopct='%1.1f%%', startangle=90)
+                    ax.set_aspect('equal')
+                    ax.set_title('Device ID For Vendor')
+
+                elif graphName == 'graph4':
+                    listVectors = Vector.query(ancestor=campaignKey, projection=[Vector.speed, Vector.responseTime]).fetch()
+
+                    listSpeeds = [vector.speed for vector in listVectors]
+                    listResponseTimes = [vector.responseTime for vector in listVectors]
 
                     ax = fig.add_subplot(1, 1, 1)
-                    ax.scatter(listSpeeds,listResponseTimes)
+                    x = numpy.array(listSpeeds)
+                    y = numpy.array(listResponseTimes)
+                    ax.scatter(x, y)
+                    fit = numpy.polyfit(x, y, deg=1)
+                    ax.plot(x, fit[0] * x + fit[1], color='red')
+                    ax.set_xlim(0.01, 100.0)
+                    ax.set_ylim(0.01, 100.0)
+                    ax.set_xscale('log')
+                    ax.set_yscale('log')
+                    ax.set_xlabel("Speed (m/s)")
+                    ax.set_ylabel("Response Time (seconds)")
+                    ax.set_title("Device Speed versus Response Time")
 
-                self.response.headers['Content-Type'] = 'image/png'
-                self.response.write(fig.savefig("Graph.png"))
+                strOutput = cStringIO.StringIO()
+                fig.savefig(strOutput, format="svg")
+                graphImage = strOutput.getvalue()
 
-                canvas.close()
+                self.response.headers['Content-Type'] = 'text/html'
+                # self.response.write("""<html><head/><body>""")
+                self.response.write(graphImage)
+                # self.response.write("""</body> </html>""")
+
+                # canvas.close()
 
             except Exception as e:
                 self.response.set_status(555, message="Custom error response code.")
-                self.response.headers['Content-Type'] = 'text/plain'
+                self.response.headers['Content-Type'] = 'image/svg+xml'
                 self.response.write('Sorry, graphing error condition ' +
                                     'encountered!\nNo image for you!\n\n' +
                                     e.message + '\n\n')

@@ -125,6 +125,7 @@ indexes:
 - kind: Vector
   ancestor: yes
   properties:
+  - name: speed
   - name: responseTime
 
 - kind: Vector
@@ -136,6 +137,11 @@ indexes:
   ancestor: yes
   properties:
   - name: iOSVersion
+
+- kind: Vector
+  ancestor: yes
+  properties:
+  - name: deviceID
 
 - kind: Vector
   ancestor: yes
