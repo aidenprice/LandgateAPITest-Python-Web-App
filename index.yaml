@@ -127,6 +127,32 @@ indexes:
   properties:
   - name: speed
   - name: responseTime
+  - name: onDeviceSuccess
+  - name: referenceCheckSuccess
+
+- kind: Vector
+  ancestor: yes
+  properties:
+  - name: distance
+  - name: responseTime
+  - name: onDeviceSuccess
+  - name: referenceCheckSuccess
+
+- kind: Vector
+  ancestor: yes
+  properties:
+  - name: pingChange
+  - name: responseTime
+  - name: onDeviceSuccess
+  - name: referenceCheckSuccess
+
+- kind: Vector
+  ancestor: yes
+  properties:
+  - name: networkChange
+  - name: responseTime
+  - name: onDeviceSuccess
+  - name: referenceCheckSuccess
 
 - kind: Vector
   ancestor: yes

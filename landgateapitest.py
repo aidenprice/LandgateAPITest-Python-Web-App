@@ -283,6 +283,116 @@ class CampaignStats(ndb.Model):
     countPingResults = ndb.IntegerProperty()
     countPingResultsSuccessful = ndb.IntegerProperty()
     totalPingTime = ndb.FloatProperty()
+    ESRI_BusStops_AttributeFilter_GET_JSON = ndb.IntegerProperty()
+    ESRI_BusStops_AttributeFilter_POST_JSON = ndb.IntegerProperty()
+    ESRI_BusStops_Big_GET_JSON = ndb.IntegerProperty()
+    ESRI_BusStops_Big_POST_JSON = ndb.IntegerProperty()
+    ESRI_BusStops_FeatureByID_GET_JSON = ndb.IntegerProperty()
+    ESRI_BusStops_FeatureByID_POST_JSON = ndb.IntegerProperty()
+    ESRI_BusStops_GetCapabilities_GET_JSON = ndb.IntegerProperty()
+    ESRI_BusStops_GetCapabilities_POST_JSON = ndb.IntegerProperty()
+    ESRI_BusStops_IntersectFilter_GET_JSON = ndb.IntegerProperty()
+    ESRI_BusStops_IntersectFilter_POST_JSON = ndb.IntegerProperty()
+    ESRI_BusStops_Small_GET_JSON = ndb.IntegerProperty()
+    ESRI_BusStops_Small_POST_JSON = ndb.IntegerProperty()
+    ESRI_Topo_Big_POST_Image = ndb.IntegerProperty()
+    ESRI_Topo_Small_GET_Image = ndb.IntegerProperty()
+    ESRI_Topo_Small_POST_Image = ndb.IntegerProperty()
+    GME_AerialPhoto_Big_GET_Image = ndb.IntegerProperty()
+    GME_AerialPhoto_GetTileKVP_GET_Image = ndb.IntegerProperty()
+    GME_AerialPhoto_GetTileKVP2_GET_Image = ndb.IntegerProperty()
+    GME_AerialPhoto_GetTileKVP3_GET_Image = ndb.IntegerProperty()
+    GME_AerialPhoto_GetTileKVP4_GET_Image = ndb.IntegerProperty()
+    GME_AerialPhoto_Small_GET_Image = ndb.IntegerProperty()
+    GME_AerialPhoto_WMSGetCapabilities_GET_XML = ndb.IntegerProperty()
+    GME_AerialPhoto_WMTSGetCapabilities_GET_XML = ndb.IntegerProperty()
+    GME_BusStops_AttributeFilter_GET_JSON = ndb.IntegerProperty()
+    GME_BusStops_Big_GET_JSON = ndb.IntegerProperty()
+    GME_BusStops_DistanceFilter_GET_JSON = ndb.IntegerProperty()
+    GME_BusStops_FeatureByID_GET_JSON = ndb.IntegerProperty()
+    GME_BusStops_IntersectFilter_GET_JSON = ndb.IntegerProperty()
+    GME_BusStops_Small_GET_JSON = ndb.IntegerProperty()
+    OGC_AerialPhoto_GetTileKVP_GET_Image = ndb.IntegerProperty()
+    OGC_AerialPhoto_GetTileRestful_GET_Image = ndb.IntegerProperty()
+    OGC_BusStops_AttributeFilter_GET_JSON = ndb.IntegerProperty()
+    OGC_BusStops_AttributeFilter_GET_XML = ndb.IntegerProperty()
+    OGC_BusStops_AttributeFilter_POST_JSON = ndb.IntegerProperty()
+    OGC_BusStops_AttributeFilter_POST_XML = ndb.IntegerProperty()
+    OGC_BusStops_Big_GET_JSON = ndb.IntegerProperty()
+    OGC_BusStops_Big_GET_XML = ndb.IntegerProperty()
+    OGC_BusStops_Big_POST_JSON = ndb.IntegerProperty()
+    OGC_BusStops_Big_POST_XML = ndb.IntegerProperty()
+    OGC_BusStops_FeatureByID_GET_JSON = ndb.IntegerProperty()
+    OGC_BusStops_FeatureByID_GET_XML = ndb.IntegerProperty()
+    OGC_BusStops_FeatureByID_POST_JSON = ndb.IntegerProperty()
+    OGC_BusStops_FeatureByID_POST_XML = ndb.IntegerProperty()
+    OGC_BusStops_GetCapabilities_GET_XML = ndb.IntegerProperty()
+    OGC_BusStops_GetCapabilities_POST_XML = ndb.IntegerProperty()
+    OGC_BusStops_IntersectFilter_GET_JSON = ndb.IntegerProperty()
+    OGC_BusStops_IntersectFilter_GET_XML = ndb.IntegerProperty()
+    OGC_BusStops_IntersectFilter_POST_JSON = ndb.IntegerProperty()
+    OGC_BusStops_IntersectFilter_POST_XML = ndb.IntegerProperty()
+    OGC_BusStops_Small_GET_JSON = ndb.IntegerProperty()
+    OGC_BusStops_Small_GET_XML = ndb.IntegerProperty()
+    OGC_BusStops_Small_POST_JSON = ndb.IntegerProperty()
+    OGC_BusStops_Small_POST_XML = ndb.IntegerProperty()
+    OGC_Topo_Big_GET_Image = ndb.IntegerProperty()
+    OGC_Topo_Small_GET_Image = ndb.IntegerProperty()
+    ESRI_BusStops_AttributeFilter_GET_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    ESRI_BusStops_AttributeFilter_POST_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    ESRI_BusStops_Big_GET_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    ESRI_BusStops_Big_POST_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    ESRI_BusStops_FeatureByID_GET_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    ESRI_BusStops_FeatureByID_POST_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    ESRI_BusStops_GetCapabilities_GET_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    ESRI_BusStops_GetCapabilities_POST_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    ESRI_BusStops_IntersectFilter_GET_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    ESRI_BusStops_IntersectFilter_POST_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    ESRI_BusStops_Small_GET_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    ESRI_BusStops_Small_POST_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    ESRI_Topo_Big_POST_Image_ReferenceSuccess = ndb.IntegerProperty()
+    ESRI_Topo_Small_GET_Image_ReferenceSuccess = ndb.IntegerProperty()
+    ESRI_Topo_Small_POST_Image_ReferenceSuccess = ndb.IntegerProperty()
+    GME_AerialPhoto_Big_GET_Image_ReferenceSuccess = ndb.IntegerProperty()
+    GME_AerialPhoto_GetTileKVP_GET_Image_ReferenceSuccess = ndb.IntegerProperty()
+    GME_AerialPhoto_GetTileKVP2_GET_Image_ReferenceSuccess = ndb.IntegerProperty()
+    GME_AerialPhoto_GetTileKVP3_GET_Image_ReferenceSuccess = ndb.IntegerProperty()
+    GME_AerialPhoto_GetTileKVP4_GET_Image_ReferenceSuccess = ndb.IntegerProperty()
+    GME_AerialPhoto_Small_GET_Image_ReferenceSuccess = ndb.IntegerProperty()
+    GME_AerialPhoto_WMSGetCapabilities_GET_XML_ReferenceSuccess = ndb.IntegerProperty()
+    GME_AerialPhoto_WMTSGetCapabilities_GET_XML_ReferenceSuccess = ndb.IntegerProperty()
+    GME_BusStops_AttributeFilter_GET_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    GME_BusStops_Big_GET_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    GME_BusStops_DistanceFilter_GET_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    GME_BusStops_FeatureByID_GET_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    GME_BusStops_IntersectFilter_GET_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    GME_BusStops_Small_GET_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_AerialPhoto_GetTileKVP_GET_Image_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_AerialPhoto_GetTileRestful_GET_Image_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_AttributeFilter_GET_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_AttributeFilter_GET_XML_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_AttributeFilter_POST_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_AttributeFilter_POST_XML_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_Big_GET_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_Big_GET_XML_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_Big_POST_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_Big_POST_XML_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_FeatureByID_GET_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_FeatureByID_GET_XML_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_FeatureByID_POST_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_FeatureByID_POST_XML_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_GetCapabilities_GET_XML_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_GetCapabilities_POST_XML_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_IntersectFilter_GET_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_IntersectFilter_GET_XML_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_IntersectFilter_POST_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_IntersectFilter_POST_XML_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_Small_GET_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_Small_GET_XML_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_Small_POST_JSON_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_BusStops_Small_POST_XML_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_Topo_Big_GET_Image_ReferenceSuccess = ndb.IntegerProperty()
+    OGC_Topo_Small_GET_Image_ReferenceSuccess = ndb.IntegerProperty()
 
 
 # Page classes
@@ -315,7 +425,6 @@ class Database(webapp2.RequestHandler):
 
             # Get the CampaignStats record for this campaign.
             stats_query = CampaignStats.query(CampaignStats.campaignName == campaignName)
-
             stats = stats_query.get()
 
             # There is no extant CampaignStats record for this campaign.
@@ -334,10 +443,122 @@ class Database(webapp2.RequestHandler):
                 stats.countPingResults = 0
                 stats.countPingResultsSuccessful = 0
                 stats.totalPingTime = 0
+                stats.ESRI_BusStops_AttributeFilter_GET_JSON = 0
+                stats.ESRI_BusStops_AttributeFilter_POST_JSON = 0
+                stats.ESRI_BusStops_Big_GET_JSON = 0
+                stats.ESRI_BusStops_Big_POST_JSON = 0
+                stats.ESRI_BusStops_FeatureByID_GET_JSON = 0
+                stats.ESRI_BusStops_FeatureByID_POST_JSON = 0
+                stats.ESRI_BusStops_GetCapabilities_GET_JSON = 0
+                stats.ESRI_BusStops_GetCapabilities_POST_JSON = 0
+                stats.ESRI_BusStops_IntersectFilter_GET_JSON = 0
+                stats.ESRI_BusStops_IntersectFilter_POST_JSON = 0
+                stats.ESRI_BusStops_Small_GET_JSON = 0
+                stats.ESRI_BusStops_Small_POST_JSON = 0
+                stats.ESRI_Topo_Big_POST_Image = 0
+                stats.ESRI_Topo_Small_GET_Image = 0
+                stats.ESRI_Topo_Small_POST_Image = 0
+                stats.GME_AerialPhoto_Big_GET_Image = 0
+                stats.GME_AerialPhoto_GetTileKVP_GET_Image = 0
+                stats.GME_AerialPhoto_GetTileKVP2_GET_Image = 0
+                stats.GME_AerialPhoto_GetTileKVP3_GET_Image = 0
+                stats.GME_AerialPhoto_GetTileKVP4_GET_Image = 0
+                stats.GME_AerialPhoto_Small_GET_Image = 0
+                stats.GME_AerialPhoto_WMSGetCapabilities_GET_XML = 0
+                stats.GME_AerialPhoto_WMTSGetCapabilities_GET_XML = 0
+                stats.GME_BusStops_AttributeFilter_GET_JSON = 0
+                stats.GME_BusStops_Big_GET_JSON = 0
+                stats.GME_BusStops_DistanceFilter_GET_JSON = 0
+                stats.GME_BusStops_FeatureByID_GET_JSON = 0
+                stats.GME_BusStops_IntersectFilter_GET_JSON = 0
+                stats.GME_BusStops_Small_GET_JSON = 0
+                stats.OGC_AerialPhoto_GetTileKVP_GET_Image = 0
+                stats.OGC_AerialPhoto_GetTileRestful_GET_Image = 0
+                stats.OGC_BusStops_AttributeFilter_GET_JSON = 0
+                stats.OGC_BusStops_AttributeFilter_GET_XML = 0
+                stats.OGC_BusStops_AttributeFilter_POST_JSON = 0
+                stats.OGC_BusStops_AttributeFilter_POST_XML = 0
+                stats.OGC_BusStops_Big_GET_JSON = 0
+                stats.OGC_BusStops_Big_GET_XML = 0
+                stats.OGC_BusStops_Big_POST_JSON = 0
+                stats.OGC_BusStops_Big_POST_XML = 0
+                stats.OGC_BusStops_FeatureByID_GET_JSON = 0
+                stats.OGC_BusStops_FeatureByID_GET_XML = 0
+                stats.OGC_BusStops_FeatureByID_POST_JSON = 0
+                stats.OGC_BusStops_FeatureByID_POST_XML = 0
+                stats.OGC_BusStops_GetCapabilities_GET_XML = 0
+                stats.OGC_BusStops_GetCapabilities_POST_XML = 0
+                stats.OGC_BusStops_IntersectFilter_GET_JSON = 0
+                stats.OGC_BusStops_IntersectFilter_GET_XML = 0
+                stats.OGC_BusStops_IntersectFilter_POST_JSON = 0
+                stats.OGC_BusStops_IntersectFilter_POST_XML = 0
+                stats.OGC_BusStops_Small_GET_JSON = 0
+                stats.OGC_BusStops_Small_GET_XML = 0
+                stats.OGC_BusStops_Small_POST_JSON = 0
+                stats.OGC_BusStops_Small_POST_XML = 0
+                stats.OGC_Topo_Big_GET_Image = 0
+                stats.OGC_Topo_Small_GET_Image = 0
+                stats.ESRI_BusStops_AttributeFilter_GET_JSON_ReferenceSuccess = 0
+                stats.ESRI_BusStops_AttributeFilter_POST_JSON_ReferenceSuccess = 0
+                stats.ESRI_BusStops_Big_GET_JSON_ReferenceSuccess = 0
+                stats.ESRI_BusStops_Big_POST_JSON_ReferenceSuccess = 0
+                stats.ESRI_BusStops_FeatureByID_GET_JSON_ReferenceSuccess = 0
+                stats.ESRI_BusStops_FeatureByID_POST_JSON_ReferenceSuccess = 0
+                stats.ESRI_BusStops_GetCapabilities_GET_JSON_ReferenceSuccess = 0
+                stats.ESRI_BusStops_GetCapabilities_POST_JSON_ReferenceSuccess = 0
+                stats.ESRI_BusStops_IntersectFilter_GET_JSON_ReferenceSuccess = 0
+                stats.ESRI_BusStops_IntersectFilter_POST_JSON_ReferenceSuccess = 0
+                stats.ESRI_BusStops_Small_GET_JSON_ReferenceSuccess = 0
+                stats.ESRI_BusStops_Small_POST_JSON_ReferenceSuccess = 0
+                stats.ESRI_Topo_Big_POST_Image_ReferenceSuccess = 0
+                stats.ESRI_Topo_Small_GET_Image_ReferenceSuccess = 0
+                stats.ESRI_Topo_Small_POST_Image_ReferenceSuccess = 0
+                stats.GME_AerialPhoto_Big_GET_Image_ReferenceSuccess = 0
+                stats.GME_AerialPhoto_GetTileKVP_GET_Image_ReferenceSuccess = 0
+                stats.GME_AerialPhoto_GetTileKVP2_GET_Image_ReferenceSuccess = 0
+                stats.GME_AerialPhoto_GetTileKVP3_GET_Image_ReferenceSuccess = 0
+                stats.GME_AerialPhoto_GetTileKVP4_GET_Image_ReferenceSuccess = 0
+                stats.GME_AerialPhoto_Small_GET_Image_ReferenceSuccess = 0
+                stats.GME_AerialPhoto_WMSGetCapabilities_GET_XML_ReferenceSuccess = 0
+                stats.GME_AerialPhoto_WMTSGetCapabilities_GET_XML_ReferenceSuccess = 0
+                stats.GME_BusStops_AttributeFilter_GET_JSON_ReferenceSuccess = 0
+                stats.GME_BusStops_Big_GET_JSON_ReferenceSuccess = 0
+                stats.GME_BusStops_DistanceFilter_GET_JSON_ReferenceSuccess = 0
+                stats.GME_BusStops_FeatureByID_GET_JSON_ReferenceSuccess = 0
+                stats.GME_BusStops_IntersectFilter_GET_JSON_ReferenceSuccess = 0
+                stats.GME_BusStops_Small_GET_JSON_ReferenceSuccess = 0
+                stats.OGC_AerialPhoto_GetTileKVP_GET_Image_ReferenceSuccess = 0
+                stats.OGC_AerialPhoto_GetTileRestful_GET_Image_ReferenceSuccess = 0
+                stats.OGC_BusStops_AttributeFilter_GET_JSON_ReferenceSuccess = 0
+                stats.OGC_BusStops_AttributeFilter_GET_XML_ReferenceSuccess = 0
+                stats.OGC_BusStops_AttributeFilter_POST_JSON_ReferenceSuccess = 0
+                stats.OGC_BusStops_AttributeFilter_POST_XML_ReferenceSuccess = 0
+                stats.OGC_BusStops_Big_GET_JSON_ReferenceSuccess = 0
+                stats.OGC_BusStops_Big_GET_XML_ReferenceSuccess = 0
+                stats.OGC_BusStops_Big_POST_JSON_ReferenceSuccess = 0
+                stats.OGC_BusStops_Big_POST_XML_ReferenceSuccess = 0
+                stats.OGC_BusStops_FeatureByID_GET_JSON_ReferenceSuccess = 0
+                stats.OGC_BusStops_FeatureByID_GET_XML_ReferenceSuccess = 0
+                stats.OGC_BusStops_FeatureByID_POST_JSON_ReferenceSuccess = 0
+                stats.OGC_BusStops_FeatureByID_POST_XML_ReferenceSuccess = 0
+                stats.OGC_BusStops_GetCapabilities_GET_XML_ReferenceSuccess = 0
+                stats.OGC_BusStops_GetCapabilities_POST_XML_ReferenceSuccess = 0
+                stats.OGC_BusStops_IntersectFilter_GET_JSON_ReferenceSuccess = 0
+                stats.OGC_BusStops_IntersectFilter_GET_XML_ReferenceSuccess = 0
+                stats.OGC_BusStops_IntersectFilter_POST_JSON_ReferenceSuccess = 0
+                stats.OGC_BusStops_IntersectFilter_POST_XML_ReferenceSuccess = 0
+                stats.OGC_BusStops_Small_GET_JSON_ReferenceSuccess = 0
+                stats.OGC_BusStops_Small_GET_XML_ReferenceSuccess = 0
+                stats.OGC_BusStops_Small_POST_JSON_ReferenceSuccess = 0
+                stats.OGC_BusStops_Small_POST_XML_ReferenceSuccess = 0
+                stats.OGC_Topo_Big_GET_Image_ReferenceSuccess = 0
+                stats.OGC_Topo_Small_GET_Image_ReferenceSuccess = 0
 
+            print stats
             # Loop through all the TestMasters and their children
             # creating database records and updating stats as we go.
             for TM in dictResults.get('TestMasters', []):
+                # print TM
                 testMaster = TestMaster(parent=campaignKey)
                 testMaster.testID = TM.get('testID')
                 testMaster.parentID = TM.get('parentID')
@@ -350,6 +571,7 @@ class Database(webapp2.RequestHandler):
                 testMaster.iOSVersion = TM.get('iOSVersion')
 
                 stats.countTestMasters += 1
+                print stats.countTestMasters
 
                 if testMaster.deviceType not in stats.allDeviceTypes:
                     stats.allDeviceTypes += testMaster.deviceType
@@ -363,6 +585,7 @@ class Database(webapp2.RequestHandler):
 
                 listTestEndpoints = []
                 for TE in TM.get('endpointResults', []):
+                    # print TE
                     testEndpoint = TestEndpoint(parent=masterKey)
 
                     testEndpoint.testID = TE.get('testID')
@@ -378,13 +601,22 @@ class Database(webapp2.RequestHandler):
                     testEndpoint.httpMethod = TE.get('httpMethod')
                     testEndpoint.testedURL = TE.get('testedURL')
                     testEndpoint.responseCode = int(TE.get('responseCode'))
-                    testEndpoint.responseData = str(TE.get('responseData'))
+                    testEndpoint.responseData = TE.get('responseData', '')
                     testEndpoint.errorResponse = TE.get('errorResponse')
                     testEndpoint.analysed = AnalysisEnum.UNANALYSED
 
                     stats.countTestEndpoints += 1
                     stats.totalTestEndpointTime += (TE.get('finishDatetime') - TE.get('startDatetime'))
                     stats.countTestEndpointsSuccessful += testEndpoint.success
+
+                    testString = testEndpoint.server + "_" + testEndpoint.dataset + "_" + testEndpoint.testName + "_" + testEndpoint.httpMethod + "_" + testEndpoint.returnType
+                    print testString
+
+                    if hasattr(stats, testString):
+                        print "hasattr succeeded"
+                        print type(getattr(stats, testString))
+                        newValue = getattr(stats, testString) + 1
+                        setattr(stats, testString, newValue)
 
                     listTestEndpoints.append(testEndpoint)
 
@@ -506,7 +738,7 @@ class Database(webapp2.RequestHandler):
                                 e.message + '\n\n')
 
     def get(self):
-        """Returns 20 TestMasters and their children tests.
+        """Returns one TestMaster and its children tests.
         This page formerly parsed the entire database into a JSON dictionary
         but memory overflows on the Google Apps Engine free tier hardware
         forced a limit on the output."""
@@ -616,7 +848,6 @@ class StoreReferences(webapp2.RequestHandler):
             taskqueue.add(url='/storereferencesworker', method='GET', params={'campaignName': campaignName})
             self.response.headers['Content-Type'] = 'text/plain'
             self.response.write('Task added to store referenceObjects for ' + campaignName)
-
 
 
 class StoreReferencesWorker(webapp2.RequestHandler):
@@ -771,21 +1002,29 @@ class Analyse(webapp2.RequestHandler):
                         # Get the 'True' referenceObject from the store
                         referenceObject = ReferenceObject.query(ReferenceObject.server == vector.server, ReferenceObject.dataset == vector.dataset, ReferenceObject.name == vector.name, ReferenceObject.httpMethod == vector.httpMethod, ReferenceObject.returnType == vector.returnType).get()
 
-                        print vector.server + " " + vector.dataset + " " + vector.name + " " + vector.httpMethod + " " + vector.returnType
+                        vectorString = vector.server + "_" + vector.dataset + "_" + vector.name + "_" + vector.httpMethod + "_" + vector.returnType + "_ReferenceSuccess"
 
                         # Default to false for reference check truthiness.
                         vector.referenceCheckSuccess = False
 
                         # Check whether the referenceObject's text can
                         # be found in the testEndpoint's response.
-                        responseData = testEndpoint.responseData.replace('\r\n', '').replace('\n', '')
-                        reference = referenceObject.reference
-                        print responseData
-                        print reference
-                        if referenceObject is not None and responseData in reference:
-                            vector.referenceCheckSuccess = True
+                        if referenceObject is not None:
+                            responseData = testEndpoint.responseData.encode('ascii', 'ignore').replace('\r\n', '').replace('\n', '').replace(' ', '').replace('   ', '')
+                            reference = referenceObject.reference.encode('ascii', 'ignore').replace('\r\n', '').replace('\n', '').replace(' ', '').replace('   ', '')
+                            if responseData in reference:
+                                vector.referenceCheckSuccess = True
 
                         print vector.referenceCheckSuccess
+
+                        stats_query = CampaignStats.query(CampaignStats.campaignName == campaignName)
+                        stats = stats_query.get()
+
+                        if hasattr(stats, vectorString):
+                            newValue = getattr(stats, vectorString) +  vector.referenceCheckSuccess
+                            print 'Setting referenceCheckSuccess on Stats; ' + str(newValue)
+                            setattr(stats, vectorString, newValue)
+                            stats.put()
 
                         # Assign the TestMaster's attributes
                         vector.deviceType = testMaster.deviceType
@@ -833,7 +1072,6 @@ class Analyse(webapp2.RequestHandler):
                         endpointKey = testEndpoint.put()
                         print "Analysis IMPOSSIBLE"
 
-                        self.response.set_status(555, message="Custom error response code.")
                         self.response.headers['Content-Type'] = 'text/plain'
                         self.response.write('Sorry, analysis is impossible ' +
                                             'for this endpoint test!\n\n')
@@ -844,6 +1082,24 @@ class Analyse(webapp2.RequestHandler):
                 self.response.write('Sorry, analysis exception condition ' +
                                     'encountered!\nAnalysis aborted!\n\n' +
                                     e.message + '\n\n')
+
+
+def percentCalculator(stats, key):
+    """Calculates the percentage successful for reference checks.
+    The intention being to completely disregard test types with
+    0% reference check success rates. Assuming a process or
+    logic error."""
+    successfulKey = key + '_ReferenceSuccess'
+
+    countReferences = getattr(stats, key)
+    countReferencesSuccessful = getattr(stats, successfulKey)
+
+    percentSuccessful = 0.0
+
+    if countReferences is not None and countReferencesSuccessful is not None and countReferences != 0:
+        percentSuccessful = ((countReferencesSuccessful * 1.0) / (countReferences * 1.0)) * 100
+
+    return percentSuccessful
 
 
 class StatsPage(webapp2.RequestHandler):
@@ -943,6 +1199,62 @@ class StatsPage(webapp2.RequestHandler):
                     dictStats['countPingResults'] = stats.countPingResults
                     dictStats['averagePingTime'] = stats.totalPingTime / (stats.countPingResultsSuccessful * 1.0)
                     dictStats['percentPingTestsSuccessful'] = ((stats.countPingResultsSuccessful * 1.0) / (stats.countPingResults * 1.0)) * 100
+                    dictStats['ESRI_BusStops_AttributeFilter_GET_JSON'] = percentCalculator(stats, 'ESRI_BusStops_AttributeFilter_GET_JSON')
+                    dictStats['ESRI_BusStops_AttributeFilter_POST_JSON'] = percentCalculator(stats, 'ESRI_BusStops_AttributeFilter_POST_JSON')
+                    dictStats['ESRI_BusStops_Big_GET_JSON'] = percentCalculator(stats, 'ESRI_BusStops_Big_GET_JSON')
+                    dictStats['ESRI_BusStops_Big_POST_JSON'] = percentCalculator(stats, 'ESRI_BusStops_Big_POST_JSON')
+                    dictStats['ESRI_BusStops_FeatureByID_GET_JSON'] = percentCalculator(stats, 'ESRI_BusStops_FeatureByID_GET_JSON')
+                    dictStats['ESRI_BusStops_FeatureByID_POST_JSON'] = percentCalculator(stats, 'ESRI_BusStops_FeatureByID_POST_JSON')
+                    dictStats['ESRI_BusStops_GetCapabilities_GET_JSON'] = percentCalculator(stats, 'ESRI_BusStops_GetCapabilities_GET_JSON')
+                    dictStats['ESRI_BusStops_GetCapabilities_POST_JSON'] = percentCalculator(stats, 'ESRI_BusStops_GetCapabilities_POST_JSON')
+                    dictStats['ESRI_BusStops_IntersectFilter_GET_JSON'] = percentCalculator(stats, 'ESRI_BusStops_IntersectFilter_GET_JSON')
+                    dictStats['ESRI_BusStops_IntersectFilter_POST_JSON'] = percentCalculator(stats, 'ESRI_BusStops_IntersectFilter_POST_JSON')
+                    dictStats['ESRI_BusStops_Small_GET_JSON'] = percentCalculator(stats, 'ESRI_BusStops_Small_GET_JSON')
+                    dictStats['ESRI_BusStops_Small_POST_JSON'] = percentCalculator(stats, 'ESRI_BusStops_Small_POST_JSON')
+                    dictStats['ESRI_Topo_Big_POST_Image'] = percentCalculator(stats, 'ESRI_Topo_Big_POST_Image')
+                    dictStats['ESRI_Topo_Small_GET_Image'] = percentCalculator(stats, 'ESRI_Topo_Small_GET_Image')
+                    dictStats['ESRI_Topo_Small_POST_Image'] = percentCalculator(stats, 'ESRI_Topo_Small_POST_Image')
+                    dictStats['GME_AerialPhoto_Big_GET_Image'] = percentCalculator(stats, 'GME_AerialPhoto_Big_GET_Image')
+                    dictStats['GME_AerialPhoto_GetTileKVP_GET_Image'] = percentCalculator(stats, 'GME_AerialPhoto_GetTileKVP_GET_Image')
+                    dictStats['GME_AerialPhoto_GetTileKVP2_GET_Image'] = percentCalculator(stats, 'GME_AerialPhoto_GetTileKVP2_GET_Image')
+                    dictStats['GME_AerialPhoto_GetTileKVP3_GET_Image'] = percentCalculator(stats, 'GME_AerialPhoto_GetTileKVP3_GET_Image')
+                    dictStats['GME_AerialPhoto_GetTileKVP4_GET_Image'] = percentCalculator(stats, 'GME_AerialPhoto_GetTileKVP4_GET_Image')
+                    dictStats['GME_AerialPhoto_Small_GET_Image'] = percentCalculator(stats, 'GME_AerialPhoto_Small_GET_Image')
+                    dictStats['GME_AerialPhoto_WMSGetCapabilities_GET_XML'] = percentCalculator(stats, 'GME_AerialPhoto_WMSGetCapabilities_GET_XML')
+                    dictStats['GME_AerialPhoto_WMTSGetCapabilities_GET_XML'] = percentCalculator(stats, 'GME_AerialPhoto_WMTSGetCapabilities_GET_XML')
+                    dictStats['GME_BusStops_AttributeFilter_GET_JSON'] = percentCalculator(stats, 'GME_BusStops_AttributeFilter_GET_JSON')
+                    dictStats['GME_BusStops_Big_GET_JSON'] = percentCalculator(stats, 'GME_BusStops_Big_GET_JSON')
+                    dictStats['GME_BusStops_DistanceFilter_GET_JSON'] = percentCalculator(stats, 'GME_BusStops_DistanceFilter_GET_JSON')
+                    dictStats['GME_BusStops_FeatureByID_GET_JSON'] = percentCalculator(stats, 'GME_BusStops_FeatureByID_GET_JSON')
+                    dictStats['GME_BusStops_IntersectFilter_GET_JSON'] = percentCalculator(stats, 'GME_BusStops_IntersectFilter_GET_JSON')
+                    dictStats['GME_BusStops_Small_GET_JSON'] = percentCalculator(stats, 'GME_BusStops_Small_GET_JSON')
+                    dictStats['OGC_AerialPhoto_GetTileKVP_GET_Image'] = percentCalculator(stats, 'OGC_AerialPhoto_GetTileKVP_GET_Image')
+                    dictStats['OGC_AerialPhoto_GetTileRestful_GET_Image'] = percentCalculator(stats, 'OGC_AerialPhoto_GetTileRestful_GET_Image')
+                    dictStats['OGC_BusStops_AttributeFilter_GET_JSON'] = percentCalculator(stats, 'OGC_BusStops_AttributeFilter_GET_JSON')
+                    dictStats['OGC_BusStops_AttributeFilter_GET_XML'] = percentCalculator(stats, 'OGC_BusStops_AttributeFilter_GET_XML')
+                    dictStats['OGC_BusStops_AttributeFilter_POST_JSON'] = percentCalculator(stats, 'OGC_BusStops_AttributeFilter_POST_JSON')
+                    dictStats['OGC_BusStops_AttributeFilter_POST_XML'] = percentCalculator(stats, 'OGC_BusStops_AttributeFilter_POST_XML')
+                    dictStats['OGC_BusStops_Big_GET_JSON'] = percentCalculator(stats, 'OGC_BusStops_Big_GET_JSON')
+                    dictStats['OGC_BusStops_Big_GET_XML'] = percentCalculator(stats, 'OGC_BusStops_Big_GET_XML')
+                    dictStats['OGC_BusStops_Big_POST_JSON'] = percentCalculator(stats, 'OGC_BusStops_Big_POST_JSON')
+                    dictStats['OGC_BusStops_Big_POST_XML'] = percentCalculator(stats, 'OGC_BusStops_Big_POST_XML')
+                    dictStats['OGC_BusStops_FeatureByID_GET_JSON'] = percentCalculator(stats, 'OGC_BusStops_FeatureByID_GET_JSON')
+                    dictStats['OGC_BusStops_FeatureByID_GET_XML'] = percentCalculator(stats, 'OGC_BusStops_FeatureByID_GET_XML')
+                    dictStats['OGC_BusStops_FeatureByID_POST_JSON'] = percentCalculator(stats, 'OGC_BusStops_FeatureByID_POST_JSON')
+                    dictStats['OGC_BusStops_FeatureByID_POST_XML'] = percentCalculator(stats, 'OGC_BusStops_FeatureByID_POST_XML')
+                    dictStats['OGC_BusStops_GetCapabilities_GET_XML'] = percentCalculator(stats, 'OGC_BusStops_GetCapabilities_GET_XML')
+                    dictStats['OGC_BusStops_GetCapabilities_POST_XML'] = percentCalculator(stats, 'OGC_BusStops_GetCapabilities_POST_XML')
+                    dictStats['OGC_BusStops_IntersectFilter_GET_JSON'] = percentCalculator(stats, 'OGC_BusStops_IntersectFilter_GET_JSON')
+                    dictStats['OGC_BusStops_IntersectFilter_GET_XML'] = percentCalculator(stats, 'OGC_BusStops_IntersectFilter_GET_XML')
+                    dictStats['OGC_BusStops_IntersectFilter_POST_JSON'] = percentCalculator(stats, 'OGC_BusStops_IntersectFilter_POST_JSON')
+                    dictStats['OGC_BusStops_IntersectFilter_POST_XML'] = percentCalculator(stats, 'OGC_BusStops_IntersectFilter_POST_XML')
+                    dictStats['OGC_BusStops_Small_GET_JSON'] = percentCalculator(stats, 'OGC_BusStops_Small_GET_JSON')
+                    dictStats['OGC_BusStops_Small_GET_XML'] = percentCalculator(stats, 'OGC_BusStops_Small_GET_XML')
+                    dictStats['OGC_BusStops_Small_POST_JSON'] = percentCalculator(stats, 'OGC_BusStops_Small_POST_JSON')
+                    dictStats['OGC_BusStops_Small_POST_XML'] = percentCalculator(stats, 'OGC_BusStops_Small_POST_XML')
+                    dictStats['OGC_Topo_Big_GET_Image'] = percentCalculator(stats, 'OGC_Topo_Big_GET_Image')
+                    dictStats['OGC_Topo_Small_GET_Image'] = percentCalculator(stats, 'OGC_Topo_Small_GET_Image')
+
                 else:
                     dictStats['campaignName'] = "No campaign found!"
 
@@ -958,6 +1270,70 @@ class StatsPage(webapp2.RequestHandler):
                                     e.message + '\n\n')
 
 
+"""Creates a pie chart with the supplied property."""
+def pieCharter(figureArg, colourMap, campaign, chartProperty):
+    listVectors = Vector.query(ancestor=campaign, projection=[Vector._properties[chartProperty]]).fetch()
+    listProperty = [getattr(vector, chartProperty) for vector in listVectors]
+    listNames = list(set(listProperty))
+    listCounts = [listProperty.count(server) for server in listNames]
+    listColours = colourMap(numpy.linspace(0., 1., len(listNames)))
+
+    ax = figureArg.add_subplot(1, 1, 1)
+    listPieWedges = ax.pie(listCounts, labels=listNames, colors=listColours,  autopct='%1.1f%%', startangle=90)
+    ax.set_aspect('equal')
+
+    for wedge in listPieWedges[0]:
+        wedge.set_edgecolor('white')
+        wedge.set_linewidth(4.0)
+
+    return ax
+
+"""Calculates R Squared value for a set of coefficients."""
+def calculateRSquared(coeffs, x, y):
+    """Adapted from leif's answer on StackOverflow, found here;
+    http://stackoverflow.com/questions/893657/how-do-i-calculate-r-squared-using-python-and-numpy"""
+    p = numpy.poly1d(coeffs)
+    # fit values, and mean
+    yhat = p(x)
+    ybar = numpy.sum(y)/len(y)
+    ssreg = numpy.sum((yhat-ybar)**2)
+    sstot = numpy.sum((y - ybar)**2)
+    return ssreg / sstot
+
+"""Creates a scatter plot for two supplied properties.
+Divides them up by succeeded and failed tests (failures being those
+that either failed on device or failed their reference check).
+Then Performs OLS linear regression on each set of scatters and overlays
+the line of best fit on the chart."""
+def scatterCharter(figureArg, campaign, chartXProperty, chartYProperty):
+    listVectors = Vector.query(ancestor=campaign, projection=[Vector._properties[chartXProperty], Vector._properties[chartYProperty], Vector.onDeviceSuccess, Vector.referenceCheckSuccess]).fetch()
+
+    listAll = [(getattr(vector, chartXProperty), getattr(vector, chartYProperty), vector.onDeviceSuccess, vector.referenceCheckSuccess) for vector in listVectors]
+    listSuccesses = [vector for vector in listAll if vector[2] and vector[3]]
+    listFailures = [vector for vector in listAll if not vector[2] and vector[3]]
+
+    ax = figureArg.add_subplot(1, 1, 1)
+
+    xSuccess = numpy.array([vector[0] for vector in listSuccesses])
+    ySuccess = numpy.array([vector[1] for vector in listSuccesses])
+    ax.scatter(xSuccess, ySuccess, c='green')
+    fitSuccess = numpy.polyfit(xSuccess, ySuccess, deg=1)
+    rSquaredSuccess = calculateRSquared(fitSuccess, xSuccess, ySuccess)
+    print rSquaredSuccess
+    labelSuccess = 'Success, r squared = ' + str(round(rSquaredSuccess, 2))
+    ax.plot(xSuccess, fitSuccess[0] * xSuccess + fitSuccess[1], color='green', linestyle='dashed', label=labelSuccess)
+
+    xFailure = numpy.array([vector[0] for vector in listFailures])
+    yFailure = numpy.array([vector[1] for vector in listFailures])
+    ax.scatter(xFailure, yFailure, c='red')
+    fitFailure = numpy.polyfit(xFailure, yFailure, deg=1)
+    rSquaredFailure = calculateRSquared(fitFailure, xFailure, yFailure)
+    print rSquaredFailure
+    labelFailure = 'Failure, r squared = ' + str(round(rSquaredFailure, 2))
+    ax.plot(xFailure, fitFailure[0] * xFailure + fitFailure[1], color='red', linestyle='dashed', label=labelFailure)
+
+    return ax
+
 class GraphsPage(webapp2.RequestHandler):
     """"A page that produces a graph for a given campaign.
     The request must specify which of the graph types they want returned.
@@ -968,7 +1344,7 @@ class GraphsPage(webapp2.RequestHandler):
             campaignName = self.request.get('campaignName')
             campaignKey = getCampaignKey(campaignName)
             graphName = self.request.get('graphName').lower()
-            if graphName not in ('graph1', 'graph2', 'graph3', 'graph4'):
+            if graphName not in ('graph1', 'graph2', 'graph3', 'graph4', 'graph5', 'graph6', 'graph7', 'graph8', 'graph9', 'graph10', 'graph11', 'graph12', 'graph13', 'graph14'):
                 raise ValueError('No such graph as ' + graphName +
                                  '. This is a custom exception.')
 
@@ -985,180 +1361,38 @@ class GraphsPage(webapp2.RequestHandler):
                 cmap = cm.Pastel2
 
                 if graphName == 'graph1':
-                    # Graph 1 on same page
-                    listServerVectors = Vector.query(ancestor=campaignKey, projection=[Vector.server]).fetch()
-
-                    listServers = [vector.server for vector in listServerVectors]
-
-                    listServerNames = list(set(listServers))
-
-                    listServerCounts = [listServers.count(server) for server in listServerNames]
-
-                    listServerColours = cmap(numpy.linspace(0., 1., len(listServerNames)))
-
-                    ax = fig.add_subplot(2, 2, 1)
-                    ax.pie(listServerCounts, labels=listServerNames, colors=listServerColours,  autopct='%1.1f%%', startangle=90)
-                    ax.set_aspect('equal')
-                    ax.set_title('Server Type')
-
-                    # Graph 2 on same page
-                    listHttpVectors = Vector.query(ancestor=campaignKey, projection=[Vector.httpMethod]).fetch()
-
-                    listHttpMethods = [vector.httpMethod for vector in listHttpVectors]
-
-                    listHttpMethodNames = list(set(listHttpMethods))
-
-                    listHttpMethodCounts = [listHttpMethods.count(method) for method in listHttpMethodNames]
-
-                    listHttpColours = cmap(numpy.linspace(0., 1., len(listHttpMethodNames)))
-
-                    ax = fig.add_subplot(2, 2, 2)
-                    ax.pie(listHttpMethodCounts, labels=listHttpMethodNames, colors=listHttpColours,  autopct='%1.1f%%', startangle=90)
-                    ax.set_aspect('equal')
-                    ax.set_title('HTTP Method')
-
-                    # Graph 3 on same page
-                    listNameVectors = Vector.query(ancestor=campaignKey, projection=[Vector.name]).fetch()
-
-                    listNames = [vector.name for vector in listNameVectors]
-
-                    listNameNames = list(set(listNames))
-
-                    listNameCounts = [listNames.count(name) for name in listNameNames]
-
-                    listNameColours = cmap(numpy.linspace(0., 1., len(listNameNames)))
-
-                    ax = fig.add_subplot(2, 2, 3)
-                    ax.pie(listNameCounts, labels=listNameNames, colors=listNameColours,  autopct='%1.1f%%', startangle=90)
-                    ax.set_aspect('equal')
-                    ax.set_title('Test Type Name')
-
-                    # Graph 4 on same page
-                    listReturnTypeVectors = Vector.query(ancestor=campaignKey, projection=[Vector.returnType]).fetch()
-
-                    listReturnTypes = [vector.returnType for vector in listReturnTypeVectors]
-
-                    listReturnTypeNames = list(set(listReturnTypes))
-
-                    listReturnTypeCounts = [listReturnTypes.count(returnType) for returnType in listReturnTypeNames]
-
-                    listReturnTypeColours = cmap(numpy.linspace(0., 1., len(listReturnTypeNames)))
-
-                    ax = fig.add_subplot(2, 2, 4)
-                    ax.pie(listReturnTypeCounts, labels=listReturnTypeNames, colors=listReturnTypeColours,  autopct='%1.1f%%', startangle=90)
-                    ax.set_aspect('equal')
-                    ax.set_title('Return Type')
+                    ax = pieCharter(fig, cmap, campaignKey, 'server')
 
                 elif graphName == 'graph2':
-                    # Graph 1 on same page
-                    listResponseCodeVectors = Vector.query(ancestor=campaignKey, projection=[Vector.responseCode]).fetch()
-
-                    listResponseCodes = [vector.responseCode for vector in listResponseCodeVectors]
-
-                    listResponseCodeNames = list(set(listResponseCodes))
-
-                    listResponseCodeCounts = [listResponseCodes.count(responseCode) for responseCode in listResponseCodeNames]
-
-                    listResponseCodeColours = cmap(numpy.linspace(0., 1., len(listResponseCodeNames)))
-
-                    ax = fig.add_subplot(2, 2, 1)
-                    ax.pie(listResponseCodeCounts, labels=listResponseCodeNames, colors=listResponseCodeColours,  autopct='%1.1f%%', startangle=90)
-                    ax.set_aspect('equal')
-                    ax.set_title('Response Codes')
-
-                    # Graph 2 on same page
-                    listOnDeviceVectors = Vector.query(ancestor=campaignKey, projection=[Vector.onDeviceSuccess]).fetch()
-
-                    listOnDevices = [vector.onDeviceSuccess for vector in listOnDeviceVectors]
-
-                    listOnDeviceNames = list(set(listOnDevices))
-
-                    listOnDeviceCounts = [listOnDevices.count(onDeviceSuccess) for onDeviceSuccess in listOnDeviceNames]
-
-                    listOnDeviceColours = cmap(numpy.linspace(0., 1., len(listOnDeviceNames)))
-
-                    ax = fig.add_subplot(2, 2, 2)
-                    ax.pie(listOnDeviceCounts, labels=listOnDeviceNames, colors=listOnDeviceColours,  autopct='%1.1f%%', startangle=90)
-                    ax.set_aspect('equal')
-                    ax.set_title('On-Device Success')
-
-                    # Graph 3 on same page
-                    listReferenceCheckVectors = Vector.query(ancestor=campaignKey, projection=[Vector.referenceCheckSuccess]).fetch()
-
-                    listReferenceChecks = [vector.referenceCheckSuccess for vector in listReferenceCheckVectors]
-
-                    listReferenceCheckNames = list(set(listReferenceChecks))
-
-                    listReferenceCheckCounts = [listReferenceChecks.count(referenceCheckSuccess) for referenceCheckSuccess in listReferenceCheckNames]
-
-                    listReferenceCheckColours = cmap(numpy.linspace(0., 1., len(listReferenceCheckNames)))
-
-                    ax = fig.add_subplot(2, 2, 3)
-                    ax.pie(listReferenceCheckCounts, labels=listReferenceCheckNames, colors=listReferenceCheckColours,  autopct='%1.1f%%', startangle=90)
-                    ax.set_aspect('equal')
-                    ax.set_title('Reference Check Success')
+                    ax = pieCharter(fig, cmap, campaignKey, 'httpMethod')
 
                 elif graphName == 'graph3':
-                    # Graph 1 on same page
-                    listDeviceTypeVectors = Vector.query(ancestor=campaignKey, projection=[Vector.deviceType]).fetch()
-
-                    listDeviceTypes = [vector.deviceType for vector in listDeviceTypeVectors]
-
-                    listDeviceTypeNames = list(set(listDeviceTypes))
-
-                    listDeviceTypeCounts = [listDeviceTypes.count(deviceType) for deviceType in listDeviceTypeNames]
-
-                    listDeviceTypeColours = cmap(numpy.linspace(0., 1., len(listDeviceTypeNames)))
-
-                    ax = fig.add_subplot(2, 2, 1)
-                    ax.pie(listDeviceTypeCounts, labels=listDeviceTypeNames, colors=listDeviceTypeColours,  autopct='%1.1f%%', startangle=90)
-                    ax.set_aspect('equal')
-                    ax.set_title('Device Types')
-
-                    # Graph 2 on same page
-                    listiOSVersionVectors = Vector.query(ancestor=campaignKey, projection=[Vector.iOSVersion]).fetch()
-
-                    listiOSVersions = [vector.iOSVersion for vector in listiOSVersionVectors]
-
-                    listiOSVersionNames = list(set(listiOSVersions))
-
-                    listiOSVersionCounts = [listiOSVersions.count(iOSVersion) for iOSVersion in listiOSVersionNames]
-
-                    listiOSVersionColours = cmap(numpy.linspace(0., 1., len(listiOSVersionNames)))
-
-                    ax = fig.add_subplot(2, 2, 2)
-                    ax.pie(listiOSVersionCounts, labels=listiOSVersionNames, colors=listiOSVersionColours,  autopct='%1.1f%%', startangle=90)
-                    ax.set_aspect('equal')
-                    ax.set_title('iOS Versions on Test Device')
-
-                    # Graph 3 on same page
-                    listDeviceIDVectors = Vector.query(ancestor=campaignKey, projection=[Vector.deviceID]).fetch()
-
-                    listDeviceIDs = [vector.deviceID for vector in listDeviceIDVectors]
-
-                    listDeviceIDNames = list(set(listDeviceIDs))
-
-                    listDeviceIDCounts = [listDeviceIDs.count(deviceID) for deviceID in listDeviceIDNames]
-
-                    listDeviceIDColours = cmap(numpy.linspace(0., 1., len(listDeviceIDNames)))
-
-                    ax = fig.add_subplot(2, 2, 3)
-                    ax.pie(listDeviceIDCounts, labels=listDeviceIDNames, colors=listDeviceIDColours,  autopct='%1.1f%%', startangle=90)
-                    ax.set_aspect('equal')
-                    ax.set_title('Device ID For Vendor')
+                    ax = pieCharter(fig, cmap, campaignKey, 'name')
 
                 elif graphName == 'graph4':
-                    listVectors = Vector.query(ancestor=campaignKey, projection=[Vector.speed, Vector.responseTime]).fetch()
+                    ax = pieCharter(fig, cmap, campaignKey, 'returnType')
 
-                    listSpeeds = [vector.speed for vector in listVectors]
-                    listResponseTimes = [vector.responseTime for vector in listVectors]
+                elif graphName == 'graph5':
+                    ax = pieCharter(fig, cmap, campaignKey, 'responseCode')
 
-                    ax = fig.add_subplot(1, 1, 1)
-                    x = numpy.array(listSpeeds)
-                    y = numpy.array(listResponseTimes)
-                    ax.scatter(x, y)
-                    fit = numpy.polyfit(x, y, deg=1)
-                    ax.plot(x, fit[0] * x + fit[1], color='red')
+                elif graphName == 'graph6':
+                    ax = pieCharter(fig, cmap, campaignKey, 'onDeviceSuccess')
+
+                elif graphName == 'graph7':
+                    ax = pieCharter(fig, cmap, campaignKey, 'referenceCheckSuccess')
+
+                elif graphName == 'graph8':
+                    ax = pieCharter(fig, cmap, campaignKey, 'deviceType')
+
+                elif graphName == 'graph9':
+                    ax = pieCharter(fig, cmap, campaignKey, 'iOSVersion')
+
+                elif graphName == 'graph10':
+                    ax = pieCharter(fig, cmap, campaignKey, 'deviceID')
+
+                elif graphName == 'graph11':
+                    ax = scatterCharter(fig, campaignKey, 'speed', 'responseTime')
+
                     ax.set_xlim(0.01, 100.0)
                     ax.set_ylim(0.01, 100.0)
                     ax.set_xscale('log')
@@ -1166,6 +1400,43 @@ class GraphsPage(webapp2.RequestHandler):
                     ax.set_xlabel("Speed (m/s)")
                     ax.set_ylabel("Response Time (seconds)")
                     ax.set_title("Device Speed versus Response Time")
+                    ax.legend()
+
+                elif graphName == 'graph12':
+                    ax = scatterCharter(fig, campaignKey, 'distance', 'responseTime')
+
+                    ax.set_xlim(0.01, 1000.0)
+                    ax.set_ylim(0.01, 100.0)
+                    ax.set_xscale('log')
+                    ax.set_yscale('log')
+                    ax.set_xlabel("Distance (m)")
+                    ax.set_ylabel("Response Time (seconds)")
+                    ax.set_title("Device Distance Travelled versus Response Time")
+                    ax.legend()
+
+                elif graphName == 'graph13':
+                    ax = scatterCharter(fig, campaignKey, 'networkChange', 'responseTime')
+
+                    # ax.set_xlim(0.01, 100.0)
+                    # ax.set_ylim(0.01, 100.0)
+                    # ax.set_xscale('log')
+                    # ax.set_yscale('log')
+                    ax.set_xlabel("Network Class Change")
+                    ax.set_ylabel("Response Time (seconds)")
+                    ax.set_title("Network Class Change versus Response Time")
+                    ax.legend()
+
+                elif graphName == 'graph14':
+                    ax = scatterCharter(fig, campaignKey, 'pingChange', 'responseTime')
+
+                    # ax.set_xlim(0.01, 100.0)
+                    # ax.set_ylim(0.01, 100.0)
+                    ax.set_xscale('log')
+                    ax.set_yscale('log')
+                    ax.set_xlabel("Ping Response Time Change")
+                    ax.set_ylabel("Response Time (seconds)")
+                    ax.set_title("Ping Response Time Change versus Response Time")
+                    ax.legend()
 
                 strOutput = cStringIO.StringIO()
                 fig.savefig(strOutput, format="svg")
