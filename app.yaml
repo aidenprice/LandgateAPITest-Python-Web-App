@@ -1,8 +1,10 @@
 application: landgateapitest
-version: 10
+version: 11
 runtime: python27
 api_version: 1
 threadsafe: yes
+
+instance_class: F4
 
 handlers:
 - url: /favicon\.ico
@@ -30,6 +32,12 @@ handlers:
 - url: /storereferencesworker
   script: landgateapitest.app
 
+- url: /map
+  script: testsmap.app
+
+- url: /staticmap
+  script: testsmap.app
+
 - url: /.*
   script: landgateapitest.app
 
@@ -37,4 +45,6 @@ libraries:
 - name: webapp2
   version: 'latest'
 - name: matplotlib
+  version: 'latest'
+- name: numpy
   version: 'latest'
