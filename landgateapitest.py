@@ -24,6 +24,7 @@ import numpy
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.cm as cm
+import matplotlib.patheffects as path_effects
 
 # Google's appengine python libraries.
 from google.appengine.ext import ndb
@@ -94,10 +95,10 @@ def HaversineDistance(location1, location2):
     """
     lat1 = location1.lat
     lon1 = location1.lon
-    # lat1, lon1 = location1
+
     lat2 = location2.lat
     lon2 = location2.lon
-    # lat2, lon2 = location2
+
     earth = 6378137 #Earth's equatorial radius in metres.
 
     #Calculate distance based on Haversine Formula
@@ -1008,8 +1009,8 @@ class StatsPage(webapp2.RequestHandler):
 
 """Creates a pie chart with the supplied property."""
 def pieCharter(figureArg, colourMap, campaign, chartProperty):
-    listVectors = Vector.query(ancestor=campaign, projection=[Vector._properties[chartProperty]]).fetch()
-    listProperty = [getattr(vector, chartProperty) for vector in listVectors]
+    listVectors = Vector.query(ancestor=campaign, projection=[Vector._properties[chartProperty], Vector.referenceCheckValid]).fetch()
+    listProperty = [getattr(vector, chartProperty) for vector in listVectors if vector.referenceCheckValid]
     listNames = list(set(listProperty))
     listCounts = [listProperty.count(server) for server in listNames]
     listColours = colourMap(numpy.linspace(0., 1., len(listNames)))
@@ -1042,34 +1043,160 @@ that either failed on device or failed their reference check).
 Then Performs OLS linear regression on each set of scatters and overlays
 the line of best fit on the chart."""
 def scatterCharter(figureArg, campaign, chartXProperty, chartYProperty):
-    listVectors = Vector.query(ancestor=campaign, projection=[Vector._properties[chartXProperty], Vector._properties[chartYProperty], Vector.onDeviceSuccess, Vector.referenceCheckSuccess]).fetch()
+    listVectors = Vector.query(ancestor=campaign, projection=[Vector._properties[chartXProperty], Vector._properties[chartYProperty], Vector.onDeviceSuccess, Vector.referenceCheckSuccess, Vector.referenceCheckValid]).fetch()
 
-    listAll = [(getattr(vector, chartXProperty), getattr(vector, chartYProperty), vector.onDeviceSuccess, vector.referenceCheckSuccess) for vector in listVectors]
+    listAll = [(getattr(vector, chartXProperty), getattr(vector, chartYProperty), vector.onDeviceSuccess, vector.referenceCheckSuccess) for vector in listVectors if vector.referenceCheckValid]
     listSuccesses = [vector for vector in listAll if vector[2] and vector[3]]
-    listFailures = [vector for vector in listAll if not vector[2] and vector[3]]
+    listDeviceFailures = [vector for vector in listAll if not vector[2]]
+    listReferenceFailures = [vector for vector in listAll if vector[2] and not vector[3]]
 
     ax = figureArg.add_subplot(1, 1, 1)
 
     xSuccess = numpy.array([vector[0] for vector in listSuccesses])
     ySuccess = numpy.array([vector[1] for vector in listSuccesses])
-    ax.scatter(xSuccess, ySuccess, c='green')
+    scatterSuccess = ax.scatter(xSuccess, ySuccess, facecolors='lightgreen', edgecolors='none', alpha=0.7, label='Successful Test')
     fitSuccess = numpy.polyfit(xSuccess, ySuccess, deg=1)
     rSquaredSuccess = calculateRSquared(fitSuccess, xSuccess, ySuccess)
-    print rSquaredSuccess
     labelSuccess = 'Success, r squared = ' + str(round(rSquaredSuccess, 2))
-    ax.plot(xSuccess, fitSuccess[0] * xSuccess + fitSuccess[1], color='green', linestyle='dashed', label=labelSuccess)
+    lineSuccess = ax.plot(xSuccess, fitSuccess[0] * xSuccess + fitSuccess[1], color='darkgreen', linestyle='--', linewidth=3, label=labelSuccess)
+    # lineSuccess.set_path_effects([path_effects.Stroke(linewidth=3, foreground='white'), path_effects.Normal()])
 
-    xFailure = numpy.array([vector[0] for vector in listFailures])
-    yFailure = numpy.array([vector[1] for vector in listFailures])
-    ax.scatter(xFailure, yFailure, c='red')
-    fitFailure = numpy.polyfit(xFailure, yFailure, deg=1)
-    rSquaredFailure = calculateRSquared(fitFailure, xFailure, yFailure)
-    print rSquaredFailure
-    labelFailure = 'Failure, r squared = ' + str(round(rSquaredFailure, 2))
-    ax.plot(xFailure, fitFailure[0] * xFailure + fitFailure[1], color='red', linestyle='dashed', label=labelFailure)
-    ax.legend(loc='best')
+    xDeviceFailure = numpy.array([vector[0] for vector in listDeviceFailures])
+    yDeviceFailure = numpy.array([vector[1] for vector in listDeviceFailures])
+    # xDeviceFailure = numpy.array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15])
+    # yDeviceFailure = numpy.array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15])
+    scatterDeviceFailure = ax.scatter(xDeviceFailure, yDeviceFailure,  facecolors='darkorange', edgecolors='darkorange', marker='^', label='Failed On Device')
+    fitDeviceFailure = numpy.polyfit(xDeviceFailure, yDeviceFailure, deg=1)
+    rSquaredDeviceFailure = calculateRSquared(fitDeviceFailure, xDeviceFailure, yDeviceFailure)
+    labelDeviceFailure = 'On Device Failure, r squared = ' + str(round(rSquaredDeviceFailure, 2))
+    lineDeviceFailure = ax.plot(xDeviceFailure, fitDeviceFailure[0] * xDeviceFailure + fitDeviceFailure[1], color='darkorange', linestyle='--', linewidth=3, label=labelDeviceFailure)
+    # lineDeviceFailure.set_path_effects([path_effects.Stroke(linewidth=3, foreground='white'), path_effects.Normal()])
+
+    xReferenceFailure = numpy.array([vector[0] for vector in listReferenceFailures])
+    yReferenceFailure = numpy.array([vector[1] for vector in listReferenceFailures])
+    scatterReferenceFailure = ax.scatter(xReferenceFailure, yReferenceFailure,  facecolors='red', edgecolors='red', marker='D', label='Failed Reference Check')
+    fitReferenceFailure = numpy.polyfit(xReferenceFailure, yReferenceFailure, deg=1)
+    rSquaredReferenceFailure = calculateRSquared(fitReferenceFailure, xReferenceFailure, yReferenceFailure)
+    labelReferenceFailure = 'Reference Check Failure, r squared = ' + str(round(rSquaredReferenceFailure, 2))
+    lineReferenceFailure = ax.plot(xReferenceFailure, fitReferenceFailure[0] * xReferenceFailure + fitReferenceFailure[1], color='red', linestyle='--', linewidth=3, label=labelReferenceFailure)
+    # lineReferenceFailure.set_path_effects([path_effects.Stroke(linewidth=3, foreground='white'), path_effects.Normal()])
+
+    # Shrink current axis's height by 10% on the bottom
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0 + box.height * 0.15, box.width, box.height * 0.85])
+
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2, fontsize=10)
 
     return ax
+
+
+"""Creates a scatter plot for two supplied properties.
+Differs from the main scatterCharter() function in that it only graphs successful
+tests, and divides them into categories based on a supplied list.
+Then Performs OLS linear regression on each set of scatters and overlays
+the line of best fit on the chart."""
+def scatterComparer(figureArg, campaign, chartXProperty, chartYProperty, categoryProperty, categories, colourMap, colourMapDark):
+    listVectors = Vector.query(ancestor=campaign, projection=[Vector._properties[chartXProperty], Vector._properties[chartYProperty], Vector._properties[categoryProperty], Vector.onDeviceSuccess, Vector.referenceCheckSuccess, Vector.referenceCheckValid]).fetch()
+
+    listAll = [(getattr(vector, chartXProperty), getattr(vector, chartYProperty), getattr(vector, categoryProperty)) for vector in listVectors if vector.referenceCheckValid and vector.onDeviceSuccess and vector.referenceCheckSuccess]
+
+    # listColours = ['teal', 'coral', 'sage', 'royalblue', 'orchid']
+    # listDarkColours = ['darkslategrey', 'chocolate', 'darksage', 'navy', 'darkorchid']
+
+    listColours = colourMap(numpy.linspace(0., 1., len(categories)))
+    listDarkColours = colourMapDark(numpy.linspace(0., 1., len(categories)))
+
+    listLists = []
+    for category in categories:
+        listLists.append([vector for vector in listAll if vector[2] == category])
+
+    ax = figureArg.add_subplot(1, 1, 1)
+
+    for index, listScatters in enumerate(listLists):
+        # print index
+        x = numpy.array([vector[0] for vector in listScatters])
+        y = numpy.array([vector[1] for vector in listScatters])
+        strLabel = categories[index]
+        paths = ax.scatter(x, y, label=strLabel, c=listColours[index], edgecolors='none')
+        fit = numpy.polyfit(x, y, deg=1)
+        rSquared = calculateRSquared(fit, x, y)
+        rLabel = strLabel + ', r squared = ' + str(round(rSquared, 2))
+        line = ax.plot(x, fit[0] * x + fit[1], color=listDarkColours[index], linestyle='--', linewidth=3, label=rLabel)
+
+    # Shrink current axis's height by 10% on the bottom
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0 + box.height * 0.15, box.width, box.height * 0.85])
+
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2, fontsize=10)
+
+    return ax
+
+
+def histogramCharter(figureArg, campaign, chartXProperty):
+    listVectors = Vector.query(ancestor=campaign, projection=[Vector._properties[chartXProperty], Vector.onDeviceSuccess, Vector.referenceCheckSuccess, Vector.referenceCheckValid]).fetch()
+
+    listAll = [(getattr(vector, chartXProperty), vector.onDeviceSuccess, vector.referenceCheckSuccess) for vector in listVectors if vector.referenceCheckValid]
+    arraySuccesses = numpy.array([vector[0] for vector in listAll if vector[1] and vector[2]])
+    arrayDeviceFailures = numpy.array([vector[0] for vector in listAll if not vector[1]])
+    arrayReferenceFailures = numpy.array([vector[0] for vector in listAll if vector[1] and not vector[2]])
+
+    ax = figureArg.add_subplot(1, 1, 1)
+
+    n, bins, patches = ax.hist([arraySuccesses, arrayDeviceFailures, arrayReferenceFailures],  label=['Success', 'On Device Failure', 'Reference Check Failure'], log=True)
+    # countsDeviceFailure, binsDeviceFailure, patchesDeviceFailure = ax.hist(arrayDeviceFailures, log=True)
+    # countsReferenceFailure, binsReferenceFailure, patchesReferenceFailure = ax.hist(arrayReferenceFailures, log=True)
+
+    ax.legend()
+
+    return ax
+
+
+def boxAndWhiskersCharter(figureArg, campaign, chartXProperty, categoryProperty, categories):
+    listVectors = Vector.query(ancestor=campaign, projection=[Vector._properties[chartXProperty], Vector._properties[categoryProperty], Vector.onDeviceSuccess, Vector.referenceCheckSuccess, Vector.referenceCheckValid, Vector.distance]).fetch()
+
+    listAll = [(getattr(vector, chartXProperty), getattr(vector, categoryProperty)) for vector in listVectors if vector.referenceCheckValid and vector.onDeviceSuccess and vector.referenceCheckSuccess]
+
+    listLists = []
+    for category in categories:
+        listLists.append([vector[0] for vector in listAll if vector[1] == category])
+
+    ax = figureArg.add_subplot(1, 1, 1)
+
+    ax.yaxis.grid(True)
+
+    result = ax.boxplot(listLists)
+    # print result
+
+    for line in result['medians']:
+        # print line.get_xydata()
+        # get position data for median line
+        x, y = line.get_xydata()[1] # top of median line
+        # overlay median value
+        ax.text(x, y, ' %.2f' % y, horizontalalignment='left', verticalalignment='center')
+
+    for line in result['boxes']:
+        x, y = line.get_xydata()[0]
+        ax.text(x, y, '%.2f' % y + ' ', horizontalalignment='right', verticalalignment='top')
+        x, y = line.get_xydata()[3]
+        ax.text(x, y, '%.2f' % y + ' ', horizontalalignment='right', verticalalignment='bottom')
+
+    for line in result['caps']:
+        # print line.get_xydata()
+        # x, y = line.get_xydata()[0]
+        # ax.text(x, y, '%.2f ' % y, horizontalalignment='right', verticalalignment='top')
+        x, y = line.get_xydata()[1]
+        ax.text(x, y, ' %.2f ' % y, horizontalalignment='left', verticalalignment='center')
+
+    # result = ax.violinplot(listLists, showmeans=True, showmedians=True, labels=categories)
+
+    # Shrink current axis's height by 10% on the bottom
+    # box = ax.get_position()
+    # ax.set_position([box.x0, box.y0 + box.height * 0.15, box.width, box.height * 0.85])
+
+    # ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2, fontsize=10)
+
+    return ax
+
 
 class GraphsPage(webapp2.RequestHandler):
     """"A page that produces a graph for a given campaign.
@@ -1081,7 +1208,13 @@ class GraphsPage(webapp2.RequestHandler):
             campaignName = self.request.get('campaignName')
             campaignKey = getCampaignKey(campaignName)
             graphName = self.request.get('graphName').lower()
-            if graphName not in ('graph1', 'graph2', 'graph3', 'graph4', 'graph5', 'graph6', 'graph7', 'graph8', 'graph9', 'graph10', 'graph11', 'graph12', 'graph13', 'graph14'):
+            if graphName not in ('graph1', 'graph2',
+            'graph3', 'graph4', 'graph5', 'graph6',
+            'graph7', 'graph8', 'graph9', 'graph10',
+            'graph11', 'graph12', 'graph13', 'graph14',
+            'graph15', 'graph16', 'graph17', 'graph18',
+            'graph19', 'graph20', 'graph21', 'graph22',
+            'graph23', 'graph24', 'graph25', 'graph26'):
                 raise ValueError('No such graph as ' + graphName +
                                  '. This is a custom exception.')
 
@@ -1096,6 +1229,8 @@ class GraphsPage(webapp2.RequestHandler):
                 fig = Figure()
                 canvas = FigureCanvas(fig)
                 cmap = cm.Pastel2
+                # cmapMedium = cm.
+                cmapDark = cm.Dark2
 
                 if graphName == 'graph1':
                     ax = pieCharter(fig, cmap, campaignKey, 'server')
@@ -1137,19 +1272,19 @@ class GraphsPage(webapp2.RequestHandler):
                     ax.set_xlabel("Speed (m/s)")
                     ax.set_ylabel("Response Time (seconds)")
                     ax.set_title("Device Speed versus Response Time")
-                    ax.legend()
+                    # ax.legend()
 
                 elif graphName == 'graph12':
                     ax = scatterCharter(fig, campaignKey, 'distance', 'responseTime')
 
                     ax.set_xlim(0.01, 1000.0)
-                    ax.set_ylim(0.01, 100.0)
+                    ax.set_ylim(0.001, 100.0)
                     ax.set_xscale('log')
                     ax.set_yscale('log')
                     ax.set_xlabel("Distance (m)")
                     ax.set_ylabel("Response Time (seconds)")
                     ax.set_title("Device Distance Travelled versus Response Time")
-                    ax.legend()
+                    # ax.legend()
 
                 elif graphName == 'graph13':
                     ax = scatterCharter(fig, campaignKey, 'networkChange', 'responseTime')
@@ -1161,7 +1296,7 @@ class GraphsPage(webapp2.RequestHandler):
                     ax.set_xlabel("Network Class Change")
                     ax.set_ylabel("Response Time (seconds)")
                     ax.set_title("Network Class Change versus Response Time")
-                    ax.legend()
+                    # ax.legend()
 
                 elif graphName == 'graph14':
                     ax = scatterCharter(fig, campaignKey, 'pingChange', 'responseTime')
@@ -1173,7 +1308,103 @@ class GraphsPage(webapp2.RequestHandler):
                     ax.set_xlabel("Ping Response Time Change")
                     ax.set_ylabel("Response Time (seconds)")
                     ax.set_title("Ping Response Time Change versus Response Time")
-                    ax.legend()
+
+                elif graphName == 'graph15':
+                    ax = histogramCharter(fig, campaignKey, 'distance')
+                    ax.set_xlabel("Distance (m)")
+                    ax.set_ylabel("Count")
+                    ax.set_title("Frequency of Tests by Distance Device Travelled")
+
+                elif graphName == 'graph16':
+                    ax = histogramCharter(fig, campaignKey, 'networkChange')
+                    ax.set_xlabel("Network Class Change")
+                    ax.set_ylabel("Count")
+                    ax.set_title("Frequency of Tests by Network Class Change")
+
+                elif graphName == 'graph17':
+                    ax = scatterComparer(fig, campaignKey, 'distance', 'responseTime', 'server', ['ESRI', 'OGC', 'GME'], cmap, cmapDark)
+
+                    ax.set_xlim(0.01, 10000.0)
+                    ax.set_ylim(0.1, 100.0)
+                    ax.set_xscale('log')
+                    ax.set_yscale('log')
+                    ax.set_xlabel("Distance (m)")
+                    ax.set_ylabel("Response Time (seconds)")
+                    ax.set_title("Device Distance Travelled versus Response Time by Server Type")
+
+                elif graphName == 'graph18':
+                    ax = scatterComparer(fig, campaignKey, 'distance', 'responseTime', 'httpMethod', ['GET', 'POST'], cmap, cmapDark)
+
+                    ax.set_xlim(0.01, 10000.0)
+                    ax.set_ylim(0.1, 100.0)
+                    ax.set_xscale('log')
+                    ax.set_yscale('log')
+                    ax.set_xlabel("Distance (m)")
+                    ax.set_ylabel("Response Time (seconds)")
+                    ax.set_title("Device Distance Travelled versus Response Time by HTTP Method")
+
+                elif graphName == 'graph19':
+                    ax = scatterComparer(fig, campaignKey, 'distance', 'responseTime', 'returnType', ['JSON', 'XML', 'Image'], cmap, cmapDark)
+
+                    ax.set_xlim(0.01, 10000.0)
+                    ax.set_ylim(0.1, 100.0)
+                    ax.set_xscale('log')
+                    ax.set_yscale('log')
+                    ax.set_xlabel("Distance (m)")
+                    ax.set_ylabel("Response Time (seconds)")
+                    ax.set_title("Device Distance Travelled versus Response Time by Response Data Type")
+
+                elif graphName == 'graph20':
+                    ax = scatterComparer(fig, campaignKey, 'distance', 'responseTime', 'name', ['Small', 'Big'], cmap, cmapDark)
+
+                    ax.set_xlim(0.01, 10000.0)
+                    ax.set_ylim(0.1, 100.0)
+                    ax.set_xscale('log')
+                    ax.set_yscale('log')
+                    ax.set_xlabel("Distance (m)")
+                    ax.set_ylabel("Response Time (seconds)")
+                    ax.set_title("Device Distance Travelled versus Response Time by Response Data Size Category")
+
+                elif graphName == 'graph21':
+                    ax = scatterComparer(fig, campaignKey, 'distance', 'responseTime', 'name', ['FeatureByID', 'AttributeFilter', 'IntersectFilter', 'DistanceFilter'], cmap, cmapDark)
+
+                    ax.set_xlim(0.01, 10000.0)
+                    ax.set_ylim(0.1, 100.0)
+                    ax.set_xscale('log')
+                    ax.set_yscale('log')
+                    ax.set_xlabel("Distance (m)")
+                    ax.set_ylabel("Response Time (seconds)")
+                    ax.set_title("Device Distance Travelled versus Response Time by Server-side Operation Type")
+
+                elif graphName == 'graph22':
+                    ax = boxAndWhiskersCharter(fig, campaignKey, 'responseTime', 'server', ['ESRI', 'OGC', 'GME'])
+                    ax.set_yscale('log')
+                    ax.set_ylabel("Response Time (seconds)")
+                    ax.set_title("Descriptive Statistics by Server Type")
+
+                elif graphName == 'graph23':
+                    ax = boxAndWhiskersCharter(fig, campaignKey, 'responseTime', 'httpMethod', ['GET', 'POST'])
+                    ax.set_yscale('log')
+                    ax.set_ylabel("Response Time (seconds)")
+                    ax.set_title("Descriptive Statistics by HTTP Method")
+
+                elif graphName == 'graph24':
+                    ax = boxAndWhiskersCharter(fig, campaignKey, 'responseTime', 'returnType', ['JSON', 'XML', 'Image'])
+                    ax.set_yscale('log')
+                    ax.set_ylabel("Response Time (seconds)")
+                    ax.set_title("Descriptive Statistics by Response Data Type")
+
+                elif graphName == 'graph25':
+                    ax = boxAndWhiskersCharter(fig, campaignKey, 'responseTime', 'name', ['Small', 'Big'])
+                    ax.set_yscale('log')
+                    ax.set_ylabel("Response Time (seconds)")
+                    ax.set_title("Descriptive Statistics by Response Data Size Category")
+
+                elif graphName == 'graph26':
+                    ax = boxAndWhiskersCharter(fig, campaignKey, 'responseTime', 'name', ['FeatureByID', 'AttributeFilter', 'IntersectFilter', 'DistanceFilter'])
+                    ax.set_yscale('log')
+                    ax.set_ylabel("Response Time (seconds)")
+                    ax.set_title("Descriptive Statistics by Server-side Operation Type")
 
                 strOutput = cStringIO.StringIO()
                 fig.savefig(strOutput, format="svg")

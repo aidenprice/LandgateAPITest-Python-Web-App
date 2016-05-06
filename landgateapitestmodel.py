@@ -138,6 +138,7 @@ class Vector(ndb.Model):
     responseCode = ndb.IntegerProperty()
     onDeviceSuccess = ndb.BooleanProperty()
     referenceCheckSuccess = ndb.BooleanProperty()
+    referenceCheckValid = ndb.BooleanProperty(default=True)
 
     preTestLocation = ndb.StructuredProperty(LocationResult)
     postTestLocation = ndb.StructuredProperty(LocationResult)

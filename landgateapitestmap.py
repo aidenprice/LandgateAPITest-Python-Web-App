@@ -47,19 +47,36 @@ class MapPlotter(webapp2.RequestHandler):
             campaignName = self.request.get('campaignName')
             campaignKey = getCampaignKey(campaignName)
 
+            mapName = self.request.get('mapName')
+
         except Exception as e:
             self.response.set_status(555, message="Custom error response code.")
             self.response.headers['Content-Type'] = 'text/plain'
             self.response.write('Missing or invalid parameter in request.\n' +
-                                'Please provide ?campaignName=\n\n' +
+                                'Please provide ?campaignName=&mapName=\n\n' +
                                 e.message + '\n\n')
         else:
             try:
-                listVectors = Vector.query(ancestor=campaignKey, projection=[Vector.preTestLocation.location]).fetch()
-                listLatsAndLongs = [[vector.preTestLocation.location.lat, vector.preTestLocation.location.lon, 1.0] for vector in listVectors]
+                listVectors = Vector.query(ancestor=campaignKey, projection=[Vector.preTestLocation.location, Vector.referenceCheckSuccess, Vector.onDeviceSuccess, Vector.referenceCheckValid]).fetch()
+
+                listAll = [(vector.preTestLocation.location.lat, vector.preTestLocation.location.lon, vector.referenceCheckSuccess, vector.onDeviceSuccess, vector.referenceCheckValid) for vector in listVectors]
+
+                listFiltered = [vector for vector in listAll if vector[4]]
+
+                listLatsAndLongs = []
+                if mapName == 'All':
+                    listLatsAndLongs = [[vector[0], vector[1], 1.0] for vector in listFiltered]
+                elif mapName == 'Success':
+                    listLatsAndLongs = [[vector[0], vector[1], 1.0] for vector in listFiltered if vector[2] and vector[3]]
+                elif mapName == 'FailedOnDevice':
+                    listLatsAndLongs = [[vector[0], vector[1], 1.0] for vector in listFiltered if not vector[3]]
+                elif mapName == 'FailedReferenceCheck':
+                    listLatsAndLongs = [[vector[0], vector[1], 1.0] for vector in listFiltered if not vector[2]]
+                elif mapName == 'AllFailures':
+                    listLatsAndLongs = [[vector[0], vector[1], 1.0] for vector in listFiltered if not (vector[2] and vector[3])]
 
                 outString = PRETEXT + str(listLatsAndLongs) + POSTTEXT
-                print outString
+
                 self.response.headers['Content-Type'] = 'text/html'
                 self.response.write(outString)
 
@@ -90,7 +107,7 @@ class StaticMapPlotter(webapp2.RequestHandler):
                 listLatsAndLongs = [[vector.preTestLocation.location.lat, vector.preTestLocation.location.lon, 1.0] for vector in listVectors]
 
                 outString = PRETEXT + str(listLatsAndLongs) + POSTTEXT
-                print outString
+
                 self.response.headers['Content-Type'] = 'text/html'
                 self.response.write(outString)
 
