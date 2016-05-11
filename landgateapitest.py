@@ -1214,7 +1214,8 @@ class GraphsPage(webapp2.RequestHandler):
             'graph11', 'graph12', 'graph13', 'graph14',
             'graph15', 'graph16', 'graph17', 'graph18',
             'graph19', 'graph20', 'graph21', 'graph22',
-            'graph23', 'graph24', 'graph25', 'graph26'):
+            'graph23', 'graph24', 'graph25', 'graph26',
+            'graph27'):
                 raise ValueError('No such graph as ' + graphName +
                                  '. This is a custom exception.')
 
@@ -1266,7 +1267,7 @@ class GraphsPage(webapp2.RequestHandler):
                     ax = scatterCharter(fig, campaignKey, 'speed', 'responseTime')
 
                     ax.set_xlim(0.01, 100.0)
-                    ax.set_ylim(0.01, 100.0)
+                    ax.set_ylim(0.001, 100.0)
                     ax.set_xscale('log')
                     ax.set_yscale('log')
                     ax.set_xlabel("Speed (m/s)")
@@ -1302,7 +1303,7 @@ class GraphsPage(webapp2.RequestHandler):
                     ax = scatterCharter(fig, campaignKey, 'pingChange', 'responseTime')
 
                     # ax.set_xlim(0.01, 100.0)
-                    # ax.set_ylim(0.01, 100.0)
+                    ax.set_ylim(0.001, 100.0)
                     # ax.set_xscale('log')
                     ax.set_yscale('log')
                     ax.set_xlabel("Ping Response Time Change")
@@ -1380,31 +1381,37 @@ class GraphsPage(webapp2.RequestHandler):
                     ax = boxAndWhiskersCharter(fig, campaignKey, 'responseTime', 'server', ['ESRI', 'OGC', 'GME'])
                     ax.set_yscale('log')
                     ax.set_ylabel("Response Time (seconds)")
-                    ax.set_title("Descriptive Statistics by Server Type")
+                    ax.set_title("Interquartile Range byServer Type")
 
                 elif graphName == 'graph23':
                     ax = boxAndWhiskersCharter(fig, campaignKey, 'responseTime', 'httpMethod', ['GET', 'POST'])
                     ax.set_yscale('log')
                     ax.set_ylabel("Response Time (seconds)")
-                    ax.set_title("Descriptive Statistics by HTTP Method")
+                    ax.set_title("Interquartile Range byHTTP Method")
 
                 elif graphName == 'graph24':
                     ax = boxAndWhiskersCharter(fig, campaignKey, 'responseTime', 'returnType', ['JSON', 'XML', 'Image'])
                     ax.set_yscale('log')
                     ax.set_ylabel("Response Time (seconds)")
-                    ax.set_title("Descriptive Statistics by Response Data Type")
+                    ax.set_title("Interquartile Range byResponse Data Type")
 
                 elif graphName == 'graph25':
                     ax = boxAndWhiskersCharter(fig, campaignKey, 'responseTime', 'name', ['Small', 'Big'])
                     ax.set_yscale('log')
                     ax.set_ylabel("Response Time (seconds)")
-                    ax.set_title("Descriptive Statistics by Response Data Size Category")
+                    ax.set_title("Interquartile Range byResponse Data Size Category")
 
                 elif graphName == 'graph26':
                     ax = boxAndWhiskersCharter(fig, campaignKey, 'responseTime', 'name', ['FeatureByID', 'AttributeFilter', 'IntersectFilter', 'DistanceFilter'])
                     ax.set_yscale('log')
                     ax.set_ylabel("Response Time (seconds)")
-                    ax.set_title("Descriptive Statistics by Server-side Operation Type")
+                    ax.set_title("Interquartile Range byServer-side Operation Type")
+
+                elif graphName == 'graph27':
+                    ax = boxAndWhiskersCharter(fig, campaignKey, 'responseTime', 'name', ['GetTileKVP', 'GetTileRestful'])
+                    ax.set_yscale('log')
+                    ax.set_ylabel("Response Time (seconds)")
+                    ax.set_title("Interquartile Range by Image Request Type")
 
                 strOutput = cStringIO.StringIO()
                 fig.savefig(strOutput, format="svg")
