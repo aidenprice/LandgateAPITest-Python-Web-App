@@ -203,6 +203,14 @@ indexes:
 - kind: Vector
   ancestor: yes
   properties:
+  - name: distance
+  - name: onDeviceSuccess
+  - name: referenceCheckSuccess
+  - name: referenceCheckValid
+
+- kind: Vector
+  ancestor: yes
+  properties:
   - name: deviceType
   - name: referenceCheckValid
 

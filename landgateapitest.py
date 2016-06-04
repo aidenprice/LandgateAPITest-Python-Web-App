@@ -1165,10 +1165,8 @@ def boxAndWhiskersCharter(figureArg, campaign, chartXProperty, categoryProperty,
     ax.yaxis.grid(True)
 
     result = ax.boxplot(listLists)
-    # print result
 
     for line in result['medians']:
-        # print line.get_xydata()
         # get position data for median line
         x, y = line.get_xydata()[1] # top of median line
         # overlay median value
@@ -1181,19 +1179,44 @@ def boxAndWhiskersCharter(figureArg, campaign, chartXProperty, categoryProperty,
         ax.text(x, y, '%.2f' % y + ' ', horizontalalignment='right', verticalalignment='bottom')
 
     for line in result['caps']:
-        # print line.get_xydata()
-        # x, y = line.get_xydata()[0]
-        # ax.text(x, y, '%.2f ' % y, horizontalalignment='right', verticalalignment='top')
         x, y = line.get_xydata()[1]
         ax.text(x, y, ' %.2f ' % y, horizontalalignment='left', verticalalignment='center')
 
-    # result = ax.violinplot(listLists, showmeans=True, showmedians=True, labels=categories)
+    return ax
 
-    # Shrink current axis's height by 10% on the bottom
-    # box = ax.get_position()
-    # ax.set_position([box.x0, box.y0 + box.height * 0.15, box.width, box.height * 0.85])
 
-    # ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2, fontsize=10)
+def boxAndWhiskersCharterDistance(figureArg, campaign):
+    listVectors = Vector.query(ancestor=campaign, projection=[Vector.onDeviceSuccess, Vector.referenceCheckSuccess, Vector.referenceCheckValid, Vector.distance]).fetch()
+
+    listAll = [(vector.distance, vector.onDeviceSuccess, vector.referenceCheckSuccess) for vector in listVectors if vector.referenceCheckValid]
+
+    listLists = []
+
+    listLists.append([vector[0] for vector in listAll if vector[1] is True and vector[2] is True])
+    listLists.append([vector[0] for vector in listAll if vector[1] is False])
+    listLists.append([vector[0] for vector in listAll if vector[2] is False])
+
+    ax = figureArg.add_subplot(1, 1, 1)
+
+    ax.yaxis.grid(True)
+
+    result = ax.boxplot(listLists)
+
+    for line in result['medians']:
+        # get position data for median line
+        x, y = line.get_xydata()[1] # top of median line
+        # overlay median value
+        ax.text(x, y, ' %.2f' % y, horizontalalignment='left', verticalalignment='center')
+
+    for line in result['boxes']:
+        x, y = line.get_xydata()[0]
+        ax.text(x, y, '%.2f' % y + ' ', horizontalalignment='right', verticalalignment='top')
+        x, y = line.get_xydata()[3]
+        ax.text(x, y, '%.2f' % y + ' ', horizontalalignment='right', verticalalignment='bottom')
+
+    for line in result['caps']:
+        x, y = line.get_xydata()[1]
+        ax.text(x, y, ' %.2f ' % y, horizontalalignment='left', verticalalignment='center')
 
     return ax
 
@@ -1215,7 +1238,7 @@ class GraphsPage(webapp2.RequestHandler):
             'graph15', 'graph16', 'graph17', 'graph18',
             'graph19', 'graph20', 'graph21', 'graph22',
             'graph23', 'graph24', 'graph25', 'graph26',
-            'graph27'):
+            'graph27', 'graph28'):
                 raise ValueError('No such graph as ' + graphName +
                                  '. This is a custom exception.')
 
@@ -1412,6 +1435,13 @@ class GraphsPage(webapp2.RequestHandler):
                     ax.set_yscale('log')
                     ax.set_ylabel("Response Time (seconds)")
                     ax.set_title("Interquartile Range by Image Request Type")
+
+                elif graphName == 'graph28':
+                    ax = boxAndWhiskersCharterDistance(fig, campaignKey)
+                    ax.set_yscale('log')
+                    ax.set_ylim(0.001, 10000.0)
+                    ax.set_ylabel("Device Distance Travelled (m)")
+                    ax.set_title("Distance Interquartile Range by Test Success")
 
                 strOutput = cStringIO.StringIO()
                 fig.savefig(strOutput, format="svg")
